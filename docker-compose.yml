@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  bud-api-microservice:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bud-api-microservice
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    command: >
+      sh -c "python manage.py runserver 0.0.0.0:8000"
+    networks:
+      - bud-api
+
+  bud-api-postgres:
+    image: postgres
+    container_name: bud-api-postgres
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - ${POSTGRES_PORT:-5432}:${POSTGRES_PORT:-5432}
+    volumes:
+      - type: volume
+        source: postgres
+        target: ${POSTGRES_DATA:-/data/postgres}
+    networks:
+      - bud-api
+
+  celery:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bud-api-celery
+    env_file:
+      - .env
+    command: celery -A api worker --loglevel=info
+    networks:
+      - bud-api
+      - bud-rabbitmq
+
+  flower:
+    image: mher/flower
+    container_name: bud-api-flower
+    ports:
+      - "5555:5555"
+    command: ["flower", "--broker=amqp://guest@rabbitmq//"]
+    networks:
+      - bud-rabbitmq
+
+volumes:
+  postgres_data:
+
+networks:
+  bud-rabbitmq:
+    external: true
+  bud-api:
