@@ -1,6 +1,6 @@
 from django.http import HttpResponse
 
-from task_manager.jwt import verify_token
+from api.jwt import verify_token
 
 class AuthenticationMiddleware:
     """Middleware responsable to authenticate user and check user permissions
