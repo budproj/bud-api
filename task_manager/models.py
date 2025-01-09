@@ -28,7 +28,7 @@ class Task(BaseModel):
     initial_date = models.DateTimeField(null=True, blank=True)
     owner = models.TextField(null=False, blank=False)
     support_team = ArrayField(models.TextField())
-    order_index = models.AutoField(unique=True)
+    #order_index = models.AutoField(unique=True)
     attachments = ArrayField(models.TextField())
     tags = ArrayField(models.TextField())
 
