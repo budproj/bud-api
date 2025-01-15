@@ -3,17 +3,6 @@ from django.contrib.postgres.fields import ArrayField
 
 from api.base.base_model import BaseModel
 from .enums import TaskStatusChoices, TaskPriorityChoices
-
-#TODO: move this model for team application later 
-class Team(BaseModel):
-    name = models.CharField()
-    description = models.TextField(blank=True, null=True)
-    parent = models.ForeignKey('self', models.DO_NOTHING, blank=True, null=True)
-    owner = models.UUIDField(null=False, blank=False)
-
-    class Meta:
-        db_table = 'team'
-        
         
 class Task(BaseModel):
     team_id = models.ForeignKey('Team', on_delete=models.CASCADE)
@@ -28,7 +17,6 @@ class Task(BaseModel):
     due_date = models.DateTimeField(null=True, blank=True)
     owner = models.TextField(null=False, blank=False)
     support_team = ArrayField(models.TextField())
-    #order_index = models.AutoField(unique=True)
     attachments = ArrayField(models.TextField())
     tags = ArrayField(models.TextField())
 

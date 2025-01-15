@@ -36,6 +36,9 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'task_manager',
+    'okr',
+    'team',
+    'user',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -135,5 +138,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CELERY_BROKER_URL = 'amqp://localhost'
 CELERY_RESULT_BACKEND = 'rpc://'
 
+# Authz
 AUTHZ_ISSUER = os.getenv('AUTHZ_ISSUER')
 AUTHZ_AUDIENCE = os.getenv('AUTHZ_AUDIENCE')
