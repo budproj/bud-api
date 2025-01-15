@@ -16,7 +16,7 @@ class User(BaseModel):
     nickname = models.CharField(blank=True, null=True)
     linked_in_profile_address = models.CharField(blank=True, null=True)
     about = models.TextField(blank=True, null=True)
-    email = CITextField(unique=True)
+    email = models.TextField(db_collation="und-x-icu", unique=True)
     status = models.TextField(choices=UserStatusChoices)
 
     class Meta:

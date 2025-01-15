@@ -2,10 +2,12 @@ from django.db import models
 from django.contrib.postgres.fields import ArrayField
 
 from api.base.base_model import BaseModel
+from team.models import Team
+
 from .enums import TaskStatusChoices, TaskPriorityChoices
         
 class Task(BaseModel):
-    team_id = models.ForeignKey('Team', on_delete=models.CASCADE)
+    team_id = models.ForeignKey(Team, on_delete=models.CASCADE)
     status = models.TextField(
         choices=TaskStatusChoices,
         default=TaskStatusChoices.PENDING,
@@ -53,7 +55,7 @@ class Task(BaseModel):
 
 
 class TaskHistory(BaseModel):
-    task_id = models.ForeignKey('Task', on_delete=models.CASCADE)
+    task_id = models.ForeignKey(Task, on_delete=models.CASCADE)
     field = models.TextField(null=False, blank=False)
     old_state = models.TextField()
     new_state = models.TextField()
