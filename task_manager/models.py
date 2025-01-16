@@ -2,20 +2,12 @@ from django.db import models
 from django.contrib.postgres.fields import ArrayField
 
 from api.base.base_model import BaseModel
+from team.models import Team
+
 from .enums import TaskStatusChoices, TaskPriorityChoices
-
-#TODO: move this model for team application later 
-class Team(BaseModel):
-    name = models.CharField()
-    description = models.TextField(blank=True, null=True)
-    parent = models.ForeignKey('self', models.DO_NOTHING, blank=True, null=True)
-    owner = models.UUIDField(null=False, blank=False)
-
-    class Meta:
-        db_table = 'team'
         
 class Task(BaseModel):
-    team_id = models.ForeignKey('Team', on_delete=models.CASCADE)
+    team_id = models.ForeignKey(Team, on_delete=models.CASCADE)
     status = models.TextField(
         choices=TaskStatusChoices,
         default=TaskStatusChoices.PENDING,
@@ -25,21 +17,45 @@ class Task(BaseModel):
     description = models.TextField(null=False, blank=False)
     priority = models.IntegerField(choices=TaskPriorityChoices, null=False, blank=True)
     due_date = models.DateTimeField(null=True, blank=True)
-    initial_date = models.DateTimeField(null=True, blank=True)
     owner = models.TextField(null=False, blank=False)
     support_team = ArrayField(models.TextField())
-    #order_index = models.AutoField(unique=True)
     attachments = ArrayField(models.TextField())
     tags = ArrayField(models.TextField())
 
+    def save(self, *args, **kwargs):
+        
+        # identify if user is being created ou updated
+        if self.pk is not None:
+            old_instance = Task.objects.get(pk=self.pk)
+            
+            # pass thru fields searching for changes
+            for field in self._meta.fields:
+                field_name = field.name
+                old_value = getattr(old_instance, field_name)
+                new_value = getattr(self, field_name)
+
+                # stores the changed field
+                if old_value != new_value:
+                    history = TaskHistory()
+                    history.task_id = self
+                    history.field = field_name
+                    history.old_state = old_value
+                    history.new_state = new_value
+                    user = kwargs.pop('user', None) 
+                    history.author = user
+                    history.save()
+                    
+        super().save(*args, **kwargs)
+    
     def __str__(self):
         return str(self.uuid)
     
     class Meta:
         db_table = 'task'
 
+
 class TaskHistory(BaseModel):
-    task_id = models.ForeignKey('Task', on_delete=models.CASCADE)
+    task_id = models.ForeignKey(Task, on_delete=models.CASCADE)
     field = models.TextField(null=False, blank=False)
     old_state = models.TextField()
     new_state = models.TextField()
@@ -49,4 +65,4 @@ class TaskHistory(BaseModel):
         return str(self.uuid)
 
     class Meta:
-        db_table = 'task_'
+        db_table = 'task_history'
