@@ -3,7 +3,6 @@ name = "api"
 version = "0.1.0"
 description = "Bud backend post migration"
 authors = ["Kevin <kevin.souza@weme.nu>"]
-readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.13"
@@ -13,6 +12,7 @@ celery = "^5.4.0"
 python-dotenv = "^1.0.1"
 psycopg2-binary = "^2.9.10"
 pyjwt = {extras = ["crypto"], version = "^2.10.1"}
+python-dateutil = "^2.9.0.post0"
 
 
 [build-system]
