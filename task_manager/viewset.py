@@ -2,6 +2,7 @@ from datetime import datetime
 
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 
 from rest_framework import viewsets, status
 from rest_framework.response import Response
@@ -35,21 +36,26 @@ class TaskViewset(viewsets.ViewSet):
         last = request.query_params.get('last')
         if last:
             time_relative, keyword = last.split(' ')
-
+            now = timezone.now()
             if time_relative == '0':
-                print(keyword)
-                filter &= TranslateRelativeDate.current(keyword)
+                date_start, date_end = TranslateRelativeDate.current(now, keyword) 
+                filter &= Q(created_at__range=(date_start, date_end))
             else:
-                filter &= TranslateRelativeDate.last(keyword, time_relative)
+                date_start, date_end = TranslateRelativeDate.last(now, keyword, time_relative)
+                filter &= Q(created_at__range=(date_start, date_end))
             
         since = request.query_params.get('since')
         upto = request.query_params.get('upto')
         
         if since and upto:
-            filter &= TranslateRelativeDate.between(since, upto)
+            now = timezone.now()
+            date_start, date_end = TranslateRelativeDate.between(now, since, upto)
+            filter &= Q(created_at__range=(date_start, date_end))
         elif since:
-            filter &= TranslateRelativeDate.since(since)
-        print(filter)
+            now = timezone.now()
+            date_start, date_end = TranslateRelativeDate.since(now, since)
+            filter &= Q(created_at__range=(date_start, date_end))
+            
         tasks = tasks.filter(filter)
         serializer = TaskSerializer(tasks, many=True)
         return Response(serializer.data)
