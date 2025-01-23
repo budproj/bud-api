@@ -33,26 +33,6 @@ services:
       - POSTGRES_PASSWORD=changeme
       - POSTGRES_DB=budapi
 
-  celery:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: bud-api-celery
-    env_file:
-      - .env
-    command: celery -A api worker --loglevel=info flower --port:5555
-    networks:
-      - bud-api
-
-  flower:
-    image: mher/flower
-    container_name: bud-api-flower
-    ports:
-      - "5555:5555"
-    command: ["flower", "--broker=amqp://guest@rabbitmq//"]
-    networks:
-      - bud-api
-
 volumes:
   postgres_data:
 
