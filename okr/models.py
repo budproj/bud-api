@@ -46,6 +46,7 @@ class KeyResult(BaseModel):
     mode = models.TextField(choices=KeyResultModeChoices)
     comment_count = models.JSONField()
     last_updated_by = models.JSONField(blank=True, null=True)
+    support_team = models.ManyToManyField(User, through='KeyResultSupportTeamMembersUser', related_name='suport_team_key_result')
 
     class Meta:
         db_table = 'key_result'
@@ -88,15 +89,11 @@ class KeyResultComment(BaseModel):
 
 
 class KeyResultSupportTeamMembersUser(models.Model):
-    key_result_id = models.OneToOneField(KeyResult, models.DO_NOTHING)
-    user_id = models.ForeignKey(User, models.DO_NOTHING)
+    key_result_id = models.ForeignKey(KeyResult, models.DO_NOTHING, null=True, blank=True)
+    user_id = models.ForeignKey(User, models.DO_NOTHING, null=True, blank=True)
 
     class Meta:
-        # TODO: add id to this table or user many to many field
-        managed = False # django does not work with tables without id, so we don't manage this table
         db_table = 'key_result_support_team_members_user'
-        unique_together = (('key_result_id', 'user_id'),)
-
 
 class KeyResultUpdate(BaseModel):
     key_result = models.ForeignKey(KeyResult, models.DO_NOTHING)

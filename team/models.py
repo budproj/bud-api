@@ -8,16 +8,15 @@ class Team(BaseModel):
     description = models.TextField(blank=True, null=True)
     parent = models.ForeignKey('self', models.CASCADE, blank=True, null=True)
     owner = models.ForeignKey(User, models.CASCADE,null=False, blank=False)
-
+    users = models.ManyToManyField(User, through='TeamUsersUser', related_name='Team_users')
+    
     class Meta:
         db_table = 'team'
 
 
 class TeamUsersUser(models.Model):
-    team_id = models.OneToOneField(Team, models.CASCADE) 
+    team_id = models.ForeignKey(Team, models.CASCADE) 
     user_id = models.ForeignKey(User, models.CASCADE)
 
     class Meta:
-        managed = False
         db_table = 'team_users_user'
-        unique_together = (('team_id', 'user_id'),)
