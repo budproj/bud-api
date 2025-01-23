@@ -3,11 +3,14 @@ from django.contrib.postgres.fields import ArrayField
 
 from api.base.base_model import BaseModel
 from team.models import Team
+from user.models import User
+from okr.models import KeyResult
 
 from .enums import TaskStatusChoices, TaskPriorityChoices
         
 class Task(BaseModel):
-    team_id = models.ForeignKey(Team, on_delete=models.CASCADE)
+    team_id = models.ForeignKey(Team, on_delete=models.CASCADE, blank=True, null=True, db_column='team_id')
+    key_result_id = models.ForeignKey(KeyResult, on_delete=models.CASCADE, blank=True, null=True, db_column='key_result_id')
     status = models.TextField(
         choices=TaskStatusChoices,
         default=TaskStatusChoices.PENDING,
@@ -17,23 +20,20 @@ class Task(BaseModel):
     description = models.TextField(null=False, blank=False)
     priority = models.IntegerField(choices=TaskPriorityChoices, null=False, blank=True)
     due_date = models.DateTimeField(null=True, blank=True)
-    owner = models.TextField(null=False, blank=False)
-    support_team = ArrayField(models.TextField())
-    attachments = ArrayField(models.TextField())
-    tags = ArrayField(models.TextField())
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, null=False, blank=False)
+    support_team = ArrayField(models.TextField(), blank=True, null=True)
+    attachments = ArrayField(models.TextField(), blank=True, null=True)
+    tags = ArrayField(models.TextField(), blank=True, null=True)
 
     def save(self, *args, **kwargs):
-        
         # identify if user is being created ou updated
-        if self.pk is not None:
-            old_instance = Task.objects.get(pk=self.pk)
-            
+        try:
+            old_instance = Task.objects.get(id=self.id)
             # pass thru fields searching for changes
             for field in self._meta.fields:
                 field_name = field.name
                 old_value = getattr(old_instance, field_name)
                 new_value = getattr(self, field_name)
-
                 # stores the changed field
                 if old_value != new_value:
                     history = TaskHistory()
@@ -44,11 +44,13 @@ class Task(BaseModel):
                     user = kwargs.pop('user', None) 
                     history.author = user
                     history.save()
-                    
+        except Task.DoesNotExist:
+            pass
+            
         super().save(*args, **kwargs)
     
     def __str__(self):
-        return str(self.uuid)
+        return str(self.id)
     
     class Meta:
         db_table = 'task'
