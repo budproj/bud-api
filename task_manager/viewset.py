@@ -24,12 +24,6 @@ class TaskViewset(viewsets.ViewSet):
         team = get_object_or_404(Team, id=team_id)
         
         data = request.data.copy() 
-        data['team_id'] = team_id  
-        data['initial_date'] = datetime.today() 
-        
-        
-        data['owner'] = str(request.user)  
-        data['user_id'] = "922ef72a-6c3c-4075-926a-3245cdeea75f" # Aqui precisamos passar o request.user_id
         serializer = TaskSerializer(data=data) 
         
         if serializer.is_valid():  

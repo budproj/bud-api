@@ -4,14 +4,15 @@ from django.contrib.postgres.fields import ArrayField
 from api.base.base_model import BaseModel
 from team.models import Team
 from okr.models import Cycle, KeyResult
+from user.models import User
 
 from .enums import TaskStatusChoices, TaskPriorityChoices
         
 class Task(BaseModel):
-    team_id = models.ForeignKey(Team, on_delete=models.CASCADE)
-    kr_id = models.ForeignKey(KeyResult, null=True, blank=True, on_delete=models.CASCADE)
-    cycle_id = models.ForeignKey(Cycle, null=True, blank=True, on_delete=models.CASCADE)
-    user_id = models.TextField(null=False, blank=False)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE)
+    key_result = models.ForeignKey(KeyResult, null=True, blank=True, on_delete=models.CASCADE)
+    cycle = models.ForeignKey(Cycle, null=True, blank=True, on_delete=models.CASCADE)
+    owner = models.ForeignKey(User, null=False, blank=False, on_delete=models.CASCADE)
     status = models.TextField(
         choices=TaskStatusChoices,
         default=TaskStatusChoices.PENDING,
@@ -22,7 +23,7 @@ class Task(BaseModel):
     priority = models.IntegerField(choices=TaskPriorityChoices, null=False, blank=True)
     due_date = models.DateTimeField(null=True, blank=True)
     initial_date = models.DateTimeField(null=False)
-    owner = models.TextField(null=False, blank=False)
+    
     support_team = ArrayField(models.TextField())
     attachments = ArrayField(models.TextField(), blank=True)
     tags = ArrayField(models.TextField(), blank=True)

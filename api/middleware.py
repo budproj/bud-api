@@ -15,19 +15,19 @@ class AuthenticationMiddleware:
         # get token from header
         token = request.META.get('HTTP_AUTHORIZATION')
 
-        #if not token:
-        #    return HttpResponse('unauthorized', status=401)
+        if not token:
+            return HttpResponse('unauthorized', status=401)
 
         # clean header to extract only token
-        #token = token.split(" ")[1]
+        token = token.split(" ")[1]
 
         # check if token is valid and returns token properties
-        #decoded_token = verify_token(token)
+        decoded_token = verify_token(token)
 
-        #if not decoded_token:
-        #    return HttpResponse('unauthorized', status=401)
+        if not decoded_token:
+            return HttpResponse('unauthorized', status=401)
 
         # add permissions to user session
-        #request.session['permissions'] = decoded_token['permissions']
+        request.session['permissions'] = decoded_token['permissions']
         response = self.get_response(request)
         return response

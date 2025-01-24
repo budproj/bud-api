@@ -43,7 +43,6 @@ services:
     command: celery -A api worker --loglevel=info flower --port:5555
     networks:
       - bud-api
-      - bud-rabbitmq
 
   flower:
     image: mher/flower
@@ -52,12 +51,10 @@ services:
       - "5555:5555"
     command: ["flower", "--broker=amqp://guest@rabbitmq//"]
     networks:
-      - bud-rabbitmq
+      - bud-api
 
 volumes:
   postgres_data:
 
 networks:
-  bud-rabbitmq:
-    external: true
   bud-api:

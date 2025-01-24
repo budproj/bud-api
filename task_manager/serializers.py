@@ -11,4 +11,4 @@ class TaskSerializer(ModelSerializer):
     class Meta:
         model = Task
         fields = '__all__'
-        read_only = ['team_id', 'created_at', 'update_at', 'is_deleted']
+        read_only = ['team_id', 'created_at', 'update_at', 'deleted_at']
