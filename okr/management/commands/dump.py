@@ -184,94 +184,80 @@ class Command(BaseCommand):
         )
         
         TASK_1 = self.create_task(
-            team = TEAM_1,
-            key_result = KEY_RESULT_1, 
-            cycle = CYCLE_1,
+            team_id = TEAM_1,
+            key_result_id = KEY_RESULT_1, 
             title = 'Manter os danos de tokyo 3 menores que 40%',
             description = 'Diminuir os danos á cidade.',
             priority = 3,
             due_date = timezone.now() + timedelta(days=5),
             owner = users[1],
             support_team = [users[0].first_name + '' + users[0].last_name],
-            orderindex=0
         )
         
         TASK_2 = self.create_task(
-            team = TEAM_1,
-            key_result = None,
-            cycle = None,
+            team_id = TEAM_1,
+            key_result_id = None,
             title = 'Preparar tanques para novos ataques',
             description = '',
             priority = 2,
             due_date = timezone.now() + timedelta(days=5),
             owner = users[1],
             support_team = [],
-            orderindex=0
         )
         
         TASK_3 = self.create_task(
-            team = TEAM_1,
-            key_result = None, 
-            cycle=CYCLE_2,
+            team_id = TEAM_1,
+            key_result_id = None, 
             title = 'Ouvir musica',
             description = '',
             priority = 1,
             due_date = timezone.now() + timedelta(days=5),
             owner = users[0],
             support_team = [],
-            orderindex=0
         )
         
         TASK_4 = self.create_task(
-            team = TEAM_1,
-            key_result = KEY_RESULT_1, 
-            cycle=None,
+            team_id = TEAM_1,
+            key_result_id = KEY_RESULT_1, 
             title = 'Derrotar o anjo Sachiel',
             description = 'Impedir outro impacto derrotando o anjo Sachiel',
             priority = 1,
             due_date = timezone.now() + timedelta(days=5),
             owner = users[1],
             support_team = [],
-            orderindex=0
         )
         
         TASK_5 = self.create_task(
-            team = TEAM_1,
-            key_result = KEY_RESULT_2, 
-            cycle=CYCLE_1,
+            team_id = TEAM_1,
+            key_result_id = KEY_RESULT_2, 
             title = 'Impedir o modo berserk',
             description = '',
             priority = 5,
             due_date = timezone.now() + timedelta(days=5),
             owner = users[0],
             support_team = [],
-            orderindex=0
         )
         
         TASK_5 = self.create_task(
-            team = TEAM_2,
-            key_result = KEY_RESULT_4, 
-            cycle=CYCLE_5,
+            team_id = TEAM_2,
+            key_result_id = KEY_RESULT_4, 
             title = 'Clones',
             description = '',
             priority = 5,
             due_date = timezone.now() + timedelta(days=5),
             owner = users[1],
             support_team = [],
-            orderindex=0
         )
         
         TASK_6 = self.create_task(
-            team = TEAM_2,
-            key_result = KEY_RESULT_5, 
-            cycle=None,
+            team_id = TEAM_2,
+            key_result_id = KEY_RESULT_5, 
             title = 'Resistir',
             description = '',
             priority = 5,
             due_date = timezone.now() + timedelta(days=5),
             owner = users[3],
             support_team = [],
-            orderindex=0
         )
     
     def create_users(self):
@@ -332,10 +318,10 @@ class Command(BaseCommand):
             parent=parent,
             owner=user,
         )
-        if created:
-            for i in users_list:
-                TEAM.users.add(i)
-            TEAM.save()
+        #if created:
+         #   for i in users_list:
+          #      TEAM.users.add(i)
+           # TEAM.save()
         return TEAM
                 
     def create_cycle(self, date_start, date_end, team, period, cadence, parent, active = True):
@@ -390,35 +376,31 @@ class Command(BaseCommand):
             mode = mode,
             comment_count = comment_count
         )
-        if created:
-            for i in support_team:
-                KEY_RESULT.support_team.add(i)
-            KEY_RESULT.save()
+        #if created:
+         #   for i in support_team:
+          #      KEY_RESULT.support_team.add(i)
+           # KEY_RESULT.save()
         return KEY_RESULT
     
     def create_task(
         self, 
-        team, 
-        key_result, 
-        cycle,
+        team_id, 
+        key_result_id, 
         title,
         description,
         priority,
         due_date,
         owner,
         support_team,
-        orderindex,
         ):
         TASK, created = Task.objects.get_or_create(
-            team=team,
-            key_result=key_result,
-            cycle=cycle,
+            team_id=team_id,
+            key_result_id=key_result_id,
             title=title,
             description=description,
             priority=priority,
             due_date=due_date,
             owner=owner,
             support_team=support_team,   
-            orderindex=orderindex,
         )
         return TASK
