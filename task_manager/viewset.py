@@ -3,9 +3,10 @@ from datetime import datetime
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-
+from django.utils.timezone import now
 from rest_framework import viewsets, status
 from rest_framework.response import Response
+
 from task_manager.models import Task, Team
 from task_manager.serializers import TaskSerializer
 from datetime import datetime
@@ -74,11 +75,24 @@ class TaskViewset(viewsets.ViewSet):
             serializer.save()  
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         
-       
-        print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def get_one(self, request, team_id, task_id):
         task = get_object_or_404(Task.objects.prefetch_related('history'), id=task_id)
         serializer = TaskSerializer(task)
         return Response(serializer.data)
+    
+    def put(self, request, team_id, task_id):
+        task = get_object_or_404(Task, id=task_id)
+
+        if task.deleted_at:
+            return Response({"detail": "A tarefa já foi deletada."}, status=status.HTTP_400_BAD_REQUEST)
+
+        user = request.user if request.user.is_authenticated else None
+
+        task.delete_task(user=user)
+
+        serializer = TaskSerializer(task)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    

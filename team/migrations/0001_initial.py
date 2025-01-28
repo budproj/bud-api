@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
                 ('id', models.UUIDField(default=uuid6.uuid7, primary_key=True, serialize=False)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
-                ('deleted_at', models.DateTimeField(auto_now=True)),
+                ('deleted_at', models.DateTimeField(blank=True, null=True)),
                 ('name', models.CharField()),
                 ('description', models.TextField(blank=True, null=True)),
             ],

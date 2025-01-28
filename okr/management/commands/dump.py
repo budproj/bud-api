@@ -184,80 +184,94 @@ class Command(BaseCommand):
         )
         
         TASK_1 = self.create_task(
-            team_id = TEAM_1,
-            key_result_id = KEY_RESULT_1, 
+            team = TEAM_1,
+            key_result = KEY_RESULT_1, 
+            cycle = CYCLE_1,
             title = 'Manter os danos de tokyo 3 menores que 40%',
             description = 'Diminuir os danos á cidade.',
             priority = 3,
             due_date = timezone.now() + timedelta(days=5),
             owner = users[1],
             support_team = [users[0].first_name + '' + users[0].last_name],
+            orderindex=0
         )
         
         TASK_2 = self.create_task(
-            team_id = TEAM_1,
-            key_result_id = None,
+            team = TEAM_1,
+            key_result = None,
+            cycle = None,
             title = 'Preparar tanques para novos ataques',
             description = '',
             priority = 2,
             due_date = timezone.now() + timedelta(days=5),
             owner = users[1],
             support_team = [],
+            orderindex=0
         )
         
         TASK_3 = self.create_task(
-            team_id = TEAM_1,
-            key_result_id = None, 
+            team = TEAM_1,
+            key_result = None, 
+            cycle=CYCLE_2,
             title = 'Ouvir musica',
             description = '',
             priority = 1,
             due_date = timezone.now() + timedelta(days=5),
             owner = users[0],
             support_team = [],
+            orderindex=0
         )
         
         TASK_4 = self.create_task(
-            team_id = TEAM_1,
-            key_result_id = KEY_RESULT_1, 
+            team = TEAM_1,
+            key_result = KEY_RESULT_1, 
+            cycle=None,
             title = 'Derrotar o anjo Sachiel',
             description = 'Impedir outro impacto derrotando o anjo Sachiel',
             priority = 1,
             due_date = timezone.now() + timedelta(days=5),
             owner = users[1],
             support_team = [],
+            orderindex=0
         )
         
         TASK_5 = self.create_task(
-            team_id = TEAM_1,
-            key_result_id = KEY_RESULT_2, 
+            team = TEAM_1,
+            key_result = KEY_RESULT_2, 
+            cycle=CYCLE_1,
             title = 'Impedir o modo berserk',
             description = '',
             priority = 5,
             due_date = timezone.now() + timedelta(days=5),
             owner = users[0],
             support_team = [],
+            orderindex=0
         )
         
         TASK_5 = self.create_task(
-            team_id = TEAM_2,
-            key_result_id = KEY_RESULT_4, 
+            team = TEAM_2,
+            key_result = KEY_RESULT_4, 
+            cycle=CYCLE_5,
             title = 'Clones',
             description = '',
             priority = 5,
             due_date = timezone.now() + timedelta(days=5),
             owner = users[1],
             support_team = [],
+            orderindex=0
         )
         
         TASK_6 = self.create_task(
-            team_id = TEAM_2,
-            key_result_id = KEY_RESULT_5, 
+            team = TEAM_2,
+            key_result = KEY_RESULT_5, 
+            cycle=None,
             title = 'Resistir',
             description = '',
             priority = 5,
             due_date = timezone.now() + timedelta(days=5),
             owner = users[3],
             support_team = [],
+            orderindex=0
         )
     
     def create_users(self):
@@ -384,23 +398,27 @@ class Command(BaseCommand):
     
     def create_task(
         self, 
-        team_id, 
-        key_result_id, 
+        team, 
+        key_result, 
+        cycle,
         title,
         description,
         priority,
         due_date,
         owner,
         support_team,
+        orderindex,
         ):
         TASK, created = Task.objects.get_or_create(
-            team_id=team_id,
-            key_result_id=key_result_id,
+            team=team,
+            key_result=key_result,
+            cycle=cycle,
             title=title,
             description=description,
             priority=priority,
             due_date=due_date,
             owner=owner,
             support_team=support_team,   
+            orderindex=orderindex,
         )
         return TASK

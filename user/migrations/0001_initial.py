@@ -35,7 +35,7 @@ class Migration(migrations.Migration):
                 ('status', models.TextField(choices=[('ACTIVE', 'Active'), ('INACTIVE', 'Inactive')])),
                 ('created_at', models.DateTimeField(auto_now_add=True, null=True)),
                 ('updated_at', models.DateTimeField(auto_now=True, null=True)),
-                ('deleted_at', models.DateTimeField(auto_now=True)),
+                ('deleted_at', models.DateTimeField(blank=True, null=True)),
                 ('user_permissions', models.ManyToManyField(blank=True, help_text='Specific permissions for this user.', related_name='user_set', related_query_name='user', to='auth.permission', verbose_name='user permissions')),
             ],
             options={
@@ -48,7 +48,7 @@ class Migration(migrations.Migration):
                 ('id', models.UUIDField(default=uuid6.uuid7, primary_key=True, serialize=False)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
-                ('deleted_at', models.DateTimeField(auto_now=True)),
+                ('deleted_at', models.DateTimeField(blank=True, null=True)),
                 ('key', models.TextField(choices=[('LOCALE', 'Locale')])),
                 ('value', models.CharField()),
                 ('preferences', models.JSONField()),
