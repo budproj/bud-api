@@ -7,7 +7,6 @@ from api.base.base_model import BaseModel
 from team.models import Team
 from okr.models import Cycle, KeyResult
 from user.models import User
-from okr.models import KeyResult, Cycle
 
 from .enums import TaskStatusChoices, TaskPriorityChoices
         
