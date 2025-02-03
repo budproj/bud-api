@@ -5,8 +5,13 @@ from django.db import models
 from user.enums.user_choices import UserStatusChoices
 from user.enums.user_settings_choices import UserSettingsKeyChoices
 
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.contrib.auth.models import (
+    AbstractBaseUser,
+    BaseUserManager,
+    PermissionsMixin,
+)
 from api.base.base_model import BaseModel
+
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -21,7 +26,8 @@ class CustomUserManager(BaseUserManager):
     def create_superuser(self, email, password=None, **extra_fields):
         extra_fields.setdefault('role', 'GOD')
         return self.create_user(email, password, **extra_fields)
-    
+
+
 class User(AbstractBaseUser, PermissionsMixin):
     id = models.UUIDField(primary_key=True, default=uuid6.uuid7, null=False, blank=False) # initial
     authz_sub = models.CharField() # initial
@@ -50,7 +56,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = None
     is_superuser = None
     USERNAME_FIELD = 'email'
-    
+
     def __str__(self):
         return self.id + ' | ' + self.first_name + ' ' + self.last_name if self.last_name != None else ""
     

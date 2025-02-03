@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class TaskPriorityChoices(models.IntegerChoices):
     LOW = 1
     MEDIUM = 2

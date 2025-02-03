@@ -7,7 +7,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -25,10 +24,17 @@ class Migration(migrations.Migration):
                 ('first_name', models.CharField()),
                 ('last_name', models.CharField(blank=True, null=True)),
                 ('nickname', models.CharField(blank=True, null=True)),
-                ('linked_in_profile_address', models.CharField(blank=True, null=True)),
+                ('linked_in_profile_address',
+                 models.CharField(blank=True, null=True)),
                 ('about', models.TextField(blank=True, null=True)),
                 ('email', models.TextField(db_collation='und-x-icu', unique=True)),
-                ('status', models.TextField(choices=[('ACTIVE', 'Active'), ('INACTIVE', 'Inactive')])),
+                (
+                    'status',
+                    models.TextField(
+                        choices=[('ACTIVE', 'Active'),
+                                 ('INACTIVE', 'Inactive')]
+                    ),
+                ),
                 ('created_at', models.DateTimeField(auto_now_add=True, null=True)),
                 ('updated_at', models.DateTimeField(auto_now=True, null=True)),
             ],
