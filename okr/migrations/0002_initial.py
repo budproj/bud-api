@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -17,6 +16,8 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='cycle',
             name='team',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='team.team'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to='team.team'
+            ),
         ),
     ]
