@@ -8,7 +8,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -27,7 +26,18 @@ class Migration(migrations.Migration):
                 ('status', models.TextField(choices=[('Pending', 'Pending'), ('To Do', 'To Do'), ('Doing', 'Doing'), ('Done', 'Done')], default='Pending')),
                 ('title', models.TextField()),
                 ('description', models.TextField()),
-                ('priority', models.IntegerField(blank=True, choices=[(1, 'Low'), (2, 'Medium'), (3, 'High'), (4, 'Very High')])),
+                (
+                    'priority',
+                    models.IntegerField(
+                        blank=True,
+                        choices=[
+                            (1, 'Low'),
+                            (2, 'Medium'),
+                            (3, 'High'),
+                            (4, 'Very High'),
+                        ],
+                    ),
+                ),
                 ('due_date', models.DateTimeField(blank=True, null=True)),
                 ('support_team', django.contrib.postgres.fields.ArrayField(base_field=models.TextField(), blank=True, null=True, size=None)),
                 ('attachments', django.contrib.postgres.fields.ArrayField(base_field=models.TextField(), blank=True, null=True, size=None)),

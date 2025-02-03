@@ -1,5 +1,6 @@
 from django.utils import timezone
 
+
 def calculate_actual_cycle(actual_month, actual_year):
     quarter = (actual_month+2) // 3
 
@@ -7,4 +8,3 @@ def calculate_actual_cycle(actual_month, actual_year):
     date_end = timezone.datetime(actual_year, quarter*3+1, 1)
 
     return date_start, date_end, quarter
-    

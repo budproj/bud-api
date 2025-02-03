@@ -6,6 +6,7 @@ class TaskHistorySerializer(ModelSerializer):
         model = TaskHistory
         fields = '__all__'
 
+
 class TaskSerializer(ModelSerializer):
     history = TaskHistorySerializer(many=True, read_only=True)
     class Meta:

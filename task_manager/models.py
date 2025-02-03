@@ -9,20 +9,24 @@ from okr.models import Cycle, KeyResult
 from user.models import User
 
 from .enums import TaskStatusChoices, TaskPriorityChoices
-        
+
+
 class Task(BaseModel):
     team = models.ForeignKey(Team, on_delete=models.CASCADE, blank=True, null=True, db_column='team_id')
     key_result = models.ForeignKey(KeyResult, on_delete=models.CASCADE, blank=True, null=True, db_column='key_result_id')
     cycle = models.ForeignKey(Cycle, null=True, blank=True, on_delete=models.CASCADE, db_column='cycle_id')
     owner = models.ForeignKey(User, null=False, blank=False, on_delete=models.CASCADE)
     status = models.TextField(
-        choices=TaskStatusChoices,
+        choices=TaskStatusChoices.choices,
         default=TaskStatusChoices.PENDING,
-        null=False, blank=False
+        null=False,
+        blank=False,
     )
     title = models.TextField(null=False, blank=False)
     description = models.TextField(null=False, blank=False)
-    priority = models.IntegerField(choices=TaskPriorityChoices, null=False, blank=True)
+    priority = models.IntegerField(
+        choices=TaskPriorityChoices.choices, null=False, blank=True
+    )
     due_date = models.DateTimeField(null=True, blank=True)
     support_team = ArrayField(models.TextField(), blank=True, null=True)
     attachments = ArrayField(models.TextField(), blank=True, null=True)

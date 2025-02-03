@@ -8,9 +8,14 @@ from user.models import User
 
 from okr.enums.cycle_choices import CycleCadenceChoices
 from okr.enums.objective_choices import ObjectiveModeChoices
-from okr.enums.key_result_choices import KeyResultFormatChoices, KeyResultTypeChoices, KeyResultModeChoices
+from okr.enums.key_result_choices import (
+    KeyResultFormatChoices,
+    KeyResultTypeChoices,
+    KeyResultModeChoices,
+)
 from okr.enums.key_result_check_mark_choices import KeyResultCheckMarkStateChoices
 from okr.enums.key_result_comment_choices import KeyResultCommentTypeChoices
+
 
 class Cycle(BaseModel):
     date_start = models.DateTimeField() # initial
@@ -24,6 +29,7 @@ class Cycle(BaseModel):
     class Meta:
         db_table = 'cycle'
 
+
 class Objective(BaseModel):
     title = models.CharField() # initial
     cycle = models.ForeignKey(Cycle, models.CASCADE) # initial
@@ -34,7 +40,8 @@ class Objective(BaseModel):
 
     class Meta:
         db_table = 'objective'
-        
+
+
 class KeyResult(BaseModel):
     title = models.CharField() # initial
     goal = models.DecimalField(max_digits=14, decimal_places=2) # initial
@@ -96,6 +103,7 @@ class KeyResultSupportTeamMembersUser(models.Model):
 
     class Meta:
         db_table = 'key_result_support_team_members_user'
+
 
 class KeyResultUpdate(BaseModel):
     key_result = models.ForeignKey(KeyResult, models.DO_NOTHING) # initial

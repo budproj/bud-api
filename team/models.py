@@ -5,6 +5,7 @@ from django.db import models
 from api.base.base_model import BaseModel
 from user.models import User
 
+
 class Team(BaseModel):
     class GENDER(models.TextChoices):
         MALE = "Male"
