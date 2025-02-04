@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -18,26 +17,41 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='team',
             name='owner',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL
+            ),
         ),
         migrations.AddField(
             model_name='team',
             name='parent',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='team.team'),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='team.team',
+            ),
         ),
         migrations.AddField(
             model_name='teamusersuser',
             name='team_id',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='team.team'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to='team.team'
+            ),
         ),
         migrations.AddField(
             model_name='teamusersuser',
             name='user_id',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL
+            ),
         ),
         migrations.AddField(
             model_name='team',
             name='users',
-            field=models.ManyToManyField(related_name='Team_users', through='team.TeamUsersUser', to=settings.AUTH_USER_MODEL),
+            field=models.ManyToManyField(
+                related_name='Team_users',
+                through='team.TeamUsersUser',
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
     ]

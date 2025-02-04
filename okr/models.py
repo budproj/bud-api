@@ -6,21 +6,27 @@ from user.models import User
 
 from okr.enums.cycle_choices import CycleCadenceChoices
 from okr.enums.objective_choices import ObjectiveModeChoices
-from okr.enums.key_result_choices import KeyResultFormatChoices, KeyResultTypeChoices, KeyResultModeChoices
+from okr.enums.key_result_choices import (
+    KeyResultFormatChoices,
+    KeyResultTypeChoices,
+    KeyResultModeChoices,
+)
 from okr.enums.key_result_check_mark_choices import KeyResultCheckMarkStateChoices
 from okr.enums.key_result_comment_choices import KeyResultCommentTypeChoices
+
 
 class Cycle(BaseModel):
     date_start = models.DateTimeField()
     date_end = models.DateTimeField()
     team = models.ForeignKey(Team, models.CASCADE)
     period = models.CharField()
-    cadence = models.TextField(choices=CycleCadenceChoices)
+    cadence = models.TextField(choices=CycleCadenceChoices.choices)
     parent = models.ForeignKey('self', models.DO_NOTHING, blank=True, null=True)
     active = models.BooleanField()
 
     class Meta:
         db_table = 'cycle'
+
 
 class Objective(BaseModel):
     title = models.CharField()
@@ -28,25 +34,30 @@ class Objective(BaseModel):
     owner = models.ForeignKey(User, models.CASCADE)
     team = models.ForeignKey(Team, models.CASCADE, blank=True, null=True)
     description = models.CharField(blank=True, null=True)
-    mode = models.TextField(choices=ObjectiveModeChoices)
+    mode = models.TextField(choices=ObjectiveModeChoices.choices)
 
     class Meta:
         db_table = 'objective'
-        
+
+
 class KeyResult(BaseModel):
     title = models.CharField()
     goal = models.DecimalField(max_digits=14, decimal_places=2)
     initial_value = models.DecimalField(max_digits=14, decimal_places=2)
     description = models.TextField(blank=True, null=True)
-    format = models.TextField(choices=KeyResultFormatChoices)
+    format = models.TextField(choices=KeyResultFormatChoices.choices)
     objective = models.ForeignKey(Objective, models.CASCADE)
     team = models.ForeignKey(Team, models.CASCADE, blank=True, null=True)
     owner = models.ForeignKey(User, models.CASCADE)
-    type = models.TextField(choices=KeyResultTypeChoices)
-    mode = models.TextField(choices=KeyResultModeChoices)
+    type = models.TextField(choices=KeyResultTypeChoices.choices)
+    mode = models.TextField(choices=KeyResultModeChoices.choices)
     comment_count = models.JSONField()
     last_updated_by = models.JSONField(blank=True, null=True)
-    support_team = models.ManyToManyField(User, through='KeyResultSupportTeamMembersUser', related_name='suport_team_key_result')
+    support_team = models.ManyToManyField(
+        User,
+        through='KeyResultSupportTeamMembersUser',
+        related_name='suport_team_key_result',
+    )
 
     class Meta:
         db_table = 'key_result'
@@ -66,11 +77,13 @@ class KeyResultCheckIn(BaseModel):
 
 
 class KeyResultCheckMark(BaseModel):
-    state = models.TextField(choices=KeyResultCheckMarkStateChoices)
+    state = models.TextField(choices=KeyResultCheckMarkStateChoices.choices)
     description = models.TextField()
     key_result = models.ForeignKey(KeyResult, models.CASCADE)
     user = models.ForeignKey(User, models.CASCADE)
-    assigned_user = models.ForeignKey(User, models.CASCADE, related_name='assigned_user_set', blank=True, null=True)
+    assigned_user = models.ForeignKey(
+        User, models.CASCADE, related_name='assigned_user_set', blank=True, null=True
+    )
 
     class Meta:
         db_table = 'key_result_check_mark'
@@ -80,8 +93,10 @@ class KeyResultComment(BaseModel):
     text = models.TextField(blank=True, null=True)
     key_result = models.ForeignKey(KeyResult, models.CASCADE)
     user = models.ForeignKey(User, models.CASCADE)
-    type = models.TextField(choices=KeyResultCommentTypeChoices)
-    extra = models.TextField(blank=True, null=True)  # TODO: identify motivation to this field
+    type = models.TextField(choices=KeyResultCommentTypeChoices.choices)
+    extra = models.TextField(
+        blank=True, null=True
+    )  # TODO: identify motivation to this field
     parent = models.ForeignKey('self', models.CASCADE, blank=True, null=True)
 
     class Meta:
@@ -89,11 +104,14 @@ class KeyResultComment(BaseModel):
 
 
 class KeyResultSupportTeamMembersUser(models.Model):
-    key_result_id = models.ForeignKey(KeyResult, models.DO_NOTHING, null=True, blank=True)
+    key_result_id = models.ForeignKey(
+        KeyResult, models.DO_NOTHING, null=True, blank=True
+    )
     user_id = models.ForeignKey(User, models.DO_NOTHING, null=True, blank=True)
 
     class Meta:
         db_table = 'key_result_support_team_members_user'
+
 
 class KeyResultUpdate(BaseModel):
     key_result = models.ForeignKey(KeyResult, models.DO_NOTHING)

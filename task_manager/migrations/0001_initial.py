@@ -7,7 +7,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -18,7 +17,12 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='TaskHistory',
             fields=[
-                ('id', models.UUIDField(default=uuid6.uuid7, primary_key=True, serialize=False)),
+                (
+                    'id',
+                    models.UUIDField(
+                        default=uuid6.uuid7, primary_key=True, serialize=False
+                    ),
+                ),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
                 ('deleted_at', models.DateTimeField(auto_now=True)),
@@ -34,19 +38,70 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Task',
             fields=[
-                ('id', models.UUIDField(default=uuid6.uuid7, primary_key=True, serialize=False)),
+                (
+                    'id',
+                    models.UUIDField(
+                        default=uuid6.uuid7, primary_key=True, serialize=False
+                    ),
+                ),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
                 ('deleted_at', models.DateTimeField(auto_now=True)),
-                ('status', models.TextField(choices=[('Pending', 'Pending'), ('To Do', 'To Do'), ('Doing', 'Doing'), ('Done', 'Done')], default='Pending')),
+                (
+                    'status',
+                    models.TextField(
+                        choices=[
+                            ('Pending', 'Pending'),
+                            ('To Do', 'To Do'),
+                            ('Doing', 'Doing'),
+                            ('Done', 'Done'),
+                        ],
+                        default='Pending',
+                    ),
+                ),
                 ('title', models.TextField()),
                 ('description', models.TextField()),
-                ('priority', models.IntegerField(blank=True, choices=[(1, 'Low'), (2, 'Medium'), (3, 'High'), (4, 'Very High')])),
+                (
+                    'priority',
+                    models.IntegerField(
+                        blank=True,
+                        choices=[
+                            (1, 'Low'),
+                            (2, 'Medium'),
+                            (3, 'High'),
+                            (4, 'Very High'),
+                        ],
+                    ),
+                ),
                 ('due_date', models.DateTimeField(blank=True, null=True)),
-                ('support_team', django.contrib.postgres.fields.ArrayField(base_field=models.TextField(), blank=True, null=True, size=None)),
-                ('attachments', django.contrib.postgres.fields.ArrayField(base_field=models.TextField(), blank=True, null=True, size=None)),
-                ('tags', django.contrib.postgres.fields.ArrayField(base_field=models.TextField(), blank=True, null=True, size=None)),
-                ('key_result_id', models.ForeignKey(blank=True, db_column='key_result_id', null=True, on_delete=django.db.models.deletion.CASCADE, to='okr.keyresult')),
+                (
+                    'support_team',
+                    django.contrib.postgres.fields.ArrayField(
+                        base_field=models.TextField(), blank=True, null=True, size=None
+                    ),
+                ),
+                (
+                    'attachments',
+                    django.contrib.postgres.fields.ArrayField(
+                        base_field=models.TextField(), blank=True, null=True, size=None
+                    ),
+                ),
+                (
+                    'tags',
+                    django.contrib.postgres.fields.ArrayField(
+                        base_field=models.TextField(), blank=True, null=True, size=None
+                    ),
+                ),
+                (
+                    'key_result_id',
+                    models.ForeignKey(
+                        blank=True,
+                        db_column='key_result_id',
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to='okr.keyresult',
+                    ),
+                ),
             ],
             options={
                 'db_table': 'task',

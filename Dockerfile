@@ -1,4 +1,4 @@
-FROM python:3.13-slim
+FROM python:3.13-slim as build
 
 WORKDIR /app
 
@@ -12,6 +12,14 @@ RUN poetry config virtualenvs.create false \
     && poetry install --no-root
 
 COPY . /app
+
+# Run tests
+FROM setup as test
+
+RUN poetry run pyright
+
+# Run app
+FROM setup as run
 
 EXPOSE 8888
 

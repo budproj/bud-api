@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -19,16 +18,26 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='task',
             name='owner',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL
+            ),
         ),
         migrations.AddField(
             model_name='task',
             name='team_id',
-            field=models.ForeignKey(blank=True, db_column='team_id', null=True, on_delete=django.db.models.deletion.CASCADE, to='team.team'),
+            field=models.ForeignKey(
+                blank=True,
+                db_column='team_id',
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='team.team',
+            ),
         ),
         migrations.AddField(
             model_name='taskhistory',
             name='task_id',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='task_manager.task'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to='task_manager.task'
+            ),
         ),
     ]
