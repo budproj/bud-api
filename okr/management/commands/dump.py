@@ -318,10 +318,12 @@ class Command(BaseCommand):
             parent=parent,
             owner=user,
         )
+
         if created:
             for i in users_list:
                 TEAM.users.add(i)
             TEAM.save()
+
         return TEAM
                 
     def create_cycle(self, date_start, date_end, team, period, cadence, parent, active = True):
@@ -376,10 +378,12 @@ class Command(BaseCommand):
             mode = mode,
             comment_count = comment_count
         )
+
         if created:
             for i in support_team:
                 KEY_RESULT.support_team.add(i)
             KEY_RESULT.save()
+
         return KEY_RESULT
     
     def create_task(

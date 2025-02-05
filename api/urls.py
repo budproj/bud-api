@@ -43,6 +43,6 @@ swagger_paths = [
 urlpatterns = [
     path('task-management/', include('task_manager.urls')),
 ]
-print(DEBUG)
+
 if DEBUG:
     urlpatterns += swagger_paths

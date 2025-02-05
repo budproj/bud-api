@@ -28,7 +28,12 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='taskhistory',
-            name='task_id',
+            name='task',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='task_manager.task'),
+        ),
+        migrations.AddField(
+            model_name='task',
+            name='cycle',
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='okr.cycle'),
         ),
     ]
