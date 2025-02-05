@@ -15,4 +15,6 @@ COPY . /app
 
 EXPOSE 8888
 
+RUN python manage.py collectstatic
+
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8888"]
