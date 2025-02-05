@@ -93,7 +93,7 @@ class Task(BaseModel):
 
 
 class TaskHistory(BaseModel):
-    task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name="history")
+    task = models.ForeignKey(Task, on_delete=models.CASCADE)
     field = models.TextField(null=False, blank=False)
     old_state = models.TextField(null=True, blank=True) 
     new_state = models.TextField(null=True, blank=True)
