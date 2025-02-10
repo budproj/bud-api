@@ -6,4 +6,3 @@ class ObjectiveModeChoices(models.TextChoices):
     PUBLISHED = 'PUBLISHED'
     DRAFT = 'DRAFT'
     DELETED = 'DELETED'
-

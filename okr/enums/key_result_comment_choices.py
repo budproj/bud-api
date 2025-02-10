@@ -9,4 +9,3 @@ class KeyResultCommentTypeChoices(models.TextChoices):
     IMPROVEMENT = 'improvement'
     ISSUE = 'issue'
     COMMENT = 'comment'
-
