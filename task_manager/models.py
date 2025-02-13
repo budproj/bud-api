@@ -27,7 +27,7 @@ class Task(BaseModel):
     support_team = ArrayField(models.TextField(), blank=True, null=True)
     attachments = ArrayField(models.TextField(), blank=True, null=True)
     tags = ArrayField(models.TextField(), blank=True, null=True)
-    orderindex = models.IntegerField(null=False, blank=False)
+    orderindex = models.IntegerField(null=True, blank=True)
 
     def save(self, *args, **kwargs):
         user = kwargs.pop('user', None)
@@ -93,7 +93,7 @@ class Task(BaseModel):
 
 
 class TaskHistory(BaseModel):
-    task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name="history")
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='history')
     field = models.TextField(null=False, blank=False)
     old_state = models.TextField(null=True, blank=True) 
     new_state = models.TextField(null=True, blank=True)
