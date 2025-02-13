@@ -27,7 +27,7 @@ build-backend = "poetry.core.masonry.api"
 
 ###############################:weme
 #
-# TOOLS
+# LINTERS
 #
 #
 

@@ -62,7 +62,7 @@ class TaskViewset(viewsets.ViewSet):
         serializer = TaskSerializer(task)
         return Response(serializer.data)
 
-    def put(self, request, team_id, task_id):
+    def delete_one(self, request, team_id, task_id):
         task = get_object_or_404(Task, id=task_id)
 
         if task.deleted_at:
@@ -77,3 +77,14 @@ class TaskViewset(viewsets.ViewSet):
 
         serializer = TaskSerializer(task)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def put(self, request, team_id, task_id):
+        task = get_object_or_404(Task, id=task_id)
+
+        data = request.data.copy()
+        serializer = TaskSerializer(data=data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
