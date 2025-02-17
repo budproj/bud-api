@@ -57,6 +57,8 @@ class TaskViewset(viewsets.ViewSet):
             now = timezone.now()
             date_start, date_end = TranslateRelativeDate.since(now, since)
             filter &= Q(created_at__range=(date_start, date_end))
+
+        filter &= Q(deleted_at__isnull=True)
             
         tasks = tasks.filter(filter)
         serializer = TaskSerializer(tasks, many=True)
