@@ -1,3 +1,4 @@
+from rest_framework.decorators import action
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
@@ -61,7 +62,8 @@ class TaskViewset(viewsets.ViewSet):
         task = get_object_or_404(Task.objects.prefetch_related('history'), id=task_id)
         serializer = TaskSerializer(task)
         return Response(serializer.data)
-
+    
+    @action(methods=['delete'], detail=True)
     def delete_one(self, request, team_id, task_id):
         task = get_object_or_404(Task, id=task_id)
 

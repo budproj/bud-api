@@ -107,7 +107,7 @@ class TaskHistory(BaseModel):
     author = models.TextField(null=False, blank=False)
 
     def __str__(self):
-        return f'History of Task {self.task_id} - {self.field}'
+        return f'History of Task {self.task} - {self.field}'
 
     class Meta:
         db_table = 'task_history'
