@@ -12,8 +12,15 @@ from datetime import datetime
 from task_manager.serializers import TaskSerializer
 from api.utils.translate_datetime import TranslateRelativeDate
 
-class TaskViewset(viewsets.ViewSet):
+class TaskViewset(viewsets.ModelViewSet):
+    serializer_class = TaskSerializer
 
+    def get_queryset(self):
+        team_id = self.kwargs.get("team_id")
+        if not team_id:
+            return Task.objects.none()
+        
+        return Task.objects.filter(team_id__id=team_id, deleted_at__isnull=True)
     def list(self, request, team_id=None):
         if not team_id:
             return Response("Team ID is required.", status=status.HTTP_400_BAD_REQUEST)
@@ -85,11 +92,14 @@ class TaskViewset(viewsets.ViewSet):
         serializer = TaskSerializer(task)
         return Response(serializer.data)
     
-    def put(self, request, team_id, task_id):
-        task = get_object_or_404(Task, id=task_id)
+    def destroy(self, request, team_id, pk=None):
+        task = get_object_or_404(Task, id=pk)
 
         if task.deleted_at:
-            return Response({"detail": "A tarefa já foi deletada."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {'detail': 'A tarefa já foi deletada.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         user = request.user if request.user.is_authenticated else None
 
@@ -98,4 +108,12 @@ class TaskViewset(viewsets.ViewSet):
         serializer = TaskSerializer(task)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    def put(self, request, team_id, task_id):
+        task = get_object_or_404(Task, id=task_id)
+        serializer = TaskSerializer(task, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
