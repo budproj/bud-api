@@ -36,6 +36,7 @@ class Task(BaseModel):
     priority = models.IntegerField(
         choices=TaskPriorityChoices.choices, null=False, blank=True
     )
+    initial_date = models.DateTimeField(null=True, blank=True)
     due_date = models.DateTimeField(null=True, blank=True)
     support_team = ArrayField(models.TextField(), blank=True, null=True)
     attachments = ArrayField(models.TextField(), blank=True, null=True)
@@ -113,7 +114,7 @@ class TaskHistory(BaseModel):
     author = models.TextField(null=False, blank=False)
 
     def __str__(self):
-        return f'History of Task {self.task_id} - {self.field}'
+        return f'History of Task {self.task} - {self.field}'
 
     class Meta:
         db_table = 'task_history'
