@@ -14,12 +14,12 @@ RUN poetry config virtualenvs.create false \
 COPY . /app
 
 # Run tests
-FROM setup as test
+FROM build as test
 
 RUN poetry run pyright
 
 # Run app
-FROM setup as run
+FROM build as run
 
 EXPOSE 8888
 
