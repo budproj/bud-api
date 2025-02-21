@@ -65,7 +65,13 @@ class Task(BaseModel):
                 author=user.username if user else 'System',
             )
         elif old_instance:
-            self._register_history(old_instance, user)
+            for field in self._meta.fields:
+                field_name = field.name
+                old_value = getattr(old_instance, field_name, None)
+                new_value = getattr(self, field_name, None)
+
+                if old_value != new_value:
+                    self._register_history(field_name, old_value, new_value, user)
 
     def delete_task(self, user=None):
         if not self.deleted_at:

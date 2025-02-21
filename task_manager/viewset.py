@@ -7,8 +7,15 @@ from task_manager.models import Task, Team
 from task_manager.serializers import TaskSerializer
 from api.utils.translate_datetime import TranslateRelativeDate
 
+class TaskViewset(viewsets.ModelViewSet):
+    serializer_class = TaskSerializer
 
-class TaskViewset(viewsets.ViewSet):
+    def get_queryset(self):
+        team_id = self.kwargs.get("team_id")
+        if not team_id:
+            return Task.objects.none()
+        
+        return Task.objects.filter(team_id__id=team_id, deleted_at__isnull=True)
     def list(self, request, team_id=None):
         if not team_id:
             return Response('Team ID is required.', status=status.HTTP_400_BAD_REQUEST)
@@ -33,11 +40,18 @@ class TaskViewset(viewsets.ViewSet):
         last = request.query_params.get('last')
         since = request.query_params.get('since')
         upto = request.query_params.get('upto')
-        date_range = TranslateRelativeDate(
-            timezone, last=last, since=since, upto=upto
-        ).date_range
-        filter &= Q(created_at__range=date_range)
+        
+        if since and upto:
+            now = timezone.now()
+            date_start, date_end = TranslateRelativeDate.between(now, since, upto)
+            filter &= Q(created_at__range=(date_start, date_end))
+        elif since:
+            now = timezone.now()
+            date_start, date_end = TranslateRelativeDate.since(now, since)
+            filter &= Q(created_at__range=(date_start, date_end))
 
+        filter &= Q(deleted_at__isnull=True)
+            
         tasks = tasks.filter(filter)
         serializer = TaskSerializer(tasks, many=True)
         return Response(serializer.data)
@@ -61,9 +75,9 @@ class TaskViewset(viewsets.ViewSet):
         task = get_object_or_404(Task.objects.prefetch_related('history'), id=task_id)
         serializer = TaskSerializer(task)
         return Response(serializer.data)
-
-    def delete_one(self, request, team_id, task_id):
-        task = get_object_or_404(Task, id=task_id)
+    
+    def destroy(self, request, team_id, pk=None):
+        task = get_object_or_404(Task, id=pk)
 
         if task.deleted_at:
             return Response(
@@ -80,11 +94,11 @@ class TaskViewset(viewsets.ViewSet):
 
     def put(self, request, team_id, task_id):
         task = get_object_or_404(Task, id=task_id)
+        serializer = TaskSerializer(task, data=request.data, partial=True)
 
-        data = request.data.copy()
-        serializer = TaskSerializer(data=data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+      
