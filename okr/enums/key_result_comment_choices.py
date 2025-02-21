@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class KeyResultCommentTypeChoices(models.TextChoices):
     SUGGESTION = 'suggestion'
     PRAISAL = 'praisal'

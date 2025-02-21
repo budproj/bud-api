@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -19,96 +18,158 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='keyresult',
             name='owner',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL
+            ),
         ),
         migrations.AddField(
             model_name='keyresult',
             name='team',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='team.team'),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='team.team',
+            ),
         ),
         migrations.AddField(
             model_name='keyresultcheckin',
             name='key_result',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='okr.keyresult'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to='okr.keyresult'
+            ),
         ),
         migrations.AddField(
             model_name='keyresultcheckin',
             name='parent',
-            field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.DO_NOTHING, to='okr.keyresultcheckin'),
+            field=models.OneToOneField(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.DO_NOTHING,
+                to='okr.keyresultcheckin',
+            ),
         ),
         migrations.AddField(
             model_name='keyresultcheckin',
             name='user',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL
+            ),
         ),
         migrations.AddField(
             model_name='keyresultcheckmark',
             name='assigned_user',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='assigned_user_set', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='assigned_user_set',
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AddField(
             model_name='keyresultcheckmark',
             name='key_result',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='okr.keyresult'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to='okr.keyresult'
+            ),
         ),
         migrations.AddField(
             model_name='keyresultcheckmark',
             name='user',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL
+            ),
         ),
         migrations.AddField(
             model_name='keyresultcomment',
             name='key_result',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='okr.keyresult'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to='okr.keyresult'
+            ),
         ),
         migrations.AddField(
             model_name='keyresultcomment',
             name='parent',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='okr.keyresultcomment'),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='okr.keyresultcomment',
+            ),
         ),
         migrations.AddField(
             model_name='keyresultcomment',
             name='user',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL
+            ),
         ),
         migrations.AddField(
             model_name='keyresultsupportteammembersuser',
             name='key_result_id',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.DO_NOTHING, to='okr.keyresult'),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.DO_NOTHING,
+                to='okr.keyresult',
+            ),
         ),
         migrations.AddField(
             model_name='keyresultsupportteammembersuser',
             name='user_id',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.DO_NOTHING, to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.DO_NOTHING,
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AddField(
             model_name='keyresult',
             name='support_team',
-            field=models.ManyToManyField(related_name='suport_team_key_result', through='okr.KeyResultSupportTeamMembersUser', to=settings.AUTH_USER_MODEL),
+            field=models.ManyToManyField(
+                related_name='suport_team_key_result',
+                through='okr.KeyResultSupportTeamMembersUser',
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AddField(
             model_name='keyresultupdate',
             name='key_result',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='okr.keyresult'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.DO_NOTHING, to='okr.keyresult'
+            ),
         ),
         migrations.AddField(
             model_name='objective',
             name='cycle',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='okr.cycle'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to='okr.cycle'
+            ),
         ),
         migrations.AddField(
             model_name='objective',
             name='owner',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL
+            ),
         ),
         migrations.AddField(
             model_name='objective',
             name='team',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='team.team'),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='team.team',
+            ),
         ),
         migrations.AddField(
             model_name='keyresult',
             name='objective',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='okr.objective'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to='okr.objective'
+            ),
         ),
     ]
