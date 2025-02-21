@@ -52,7 +52,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'email'
     
     def __str__(self):
-        return self.id + ' | ' + self.first_name + ' ' + self.last_name if self.last_name != None else ""
+        return f'{self.id} | {self.first_name} {self.last_name}'
     
     class Meta:
         db_table = 'user'

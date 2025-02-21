@@ -23,6 +23,7 @@ class Task(BaseModel):
     title = models.TextField(null=False, blank=False)
     description = models.TextField(null=False, blank=False)
     priority = models.IntegerField(choices=TaskPriorityChoices, null=False, blank=True)
+    initial_date = models.DateTimeField(null=True, blank=True)
     due_date = models.DateTimeField(null=True, blank=True)
     support_team = ArrayField(models.TextField(), blank=True, null=True)
     attachments = ArrayField(models.TextField(), blank=True, null=True)
