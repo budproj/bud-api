@@ -37,15 +37,11 @@ class TaskViewset(viewsets.ViewSet):
         since = request.query_params.get('since')
         upto = request.query_params.get('upto')
         
-        if since and upto:
-            now = timezone.now()
-            date_start, date_end = TranslateRelativeDate.between(now, since, upto)
-            filter &= Q(created_at__range=(date_start, date_end))
-        elif since:
-            now = timezone.now()
-            date_start, date_end = TranslateRelativeDate.since(now, since)
-            filter &= Q(created_at__range=(date_start, date_end))
-
+        date_range = TranslateRelativeDate(
+            timezone, last=last, since=since, upto=upto
+        ).date_range
+        
+        filter &= Q(created_at__range=date_range)
         filter &= Q(deleted_at__isnull=True)
             
         tasks = tasks.filter(filter)
@@ -53,13 +49,8 @@ class TaskViewset(viewsets.ViewSet):
         return Response(serializer.data)
 
     def post(self, request, team_id=None):
-        # if not request.user.is_authenticated:
-        #    return Response({'error': 'Authentication required.'}, status=status.HTTP_401_UNAUTHORIZED)
-
-        team = get_object_or_404(Team, id=team_id)
-
         data = request.data.copy()
-        serializer = TaskSerializer(data=data)
+        serializer = TaskSerializer(data=data, context={'team_id', team_id})
 
         if serializer.is_valid():
             serializer.save()
@@ -69,11 +60,11 @@ class TaskViewset(viewsets.ViewSet):
 
     def get_one(self, request, team_id, pk):
         task = get_object_or_404(Task.objects.prefetch_related('history'), id=pk)
-        serializer = TaskSerializer(task)
+        serializer = TaskSerializer(task, context={'team_id', team_id})
         return Response(serializer.data)
     
     
-    def put(self, request, team_id, task_id):
+    def delete(self, request, team_id, task_id):
         task = get_object_or_404(Task, id=task_id)
 
         if task.deleted_at:
@@ -86,7 +77,7 @@ class TaskViewset(viewsets.ViewSet):
 
         task.delete_task(user=user)
 
-        serializer = TaskSerializer(task)
+        serializer = TaskSerializer(task, context={'team_id', team_id})
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     def update(self, request, pk=None, team_id=None):

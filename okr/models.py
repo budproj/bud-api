@@ -22,7 +22,7 @@ class Cycle(BaseModel):
     date_end = models.DateTimeField() # initial
     team = models.ForeignKey(Team, models.CASCADE) # initial
     period = models.CharField() # initial
-    cadence = models.TextField(choices=CycleCadenceChoices) # initial
+    cadence = models.TextField(choices=CycleCadenceChoices.choices) # initial
     parent = models.ForeignKey('self', models.DO_NOTHING, blank=True, null=True) # initial
     active = models.BooleanField() # initial
 
@@ -36,7 +36,7 @@ class Objective(BaseModel):
     owner = models.ForeignKey(User, models.CASCADE) # initial
     team = models.ForeignKey(Team, models.CASCADE, blank=True, null=True) # initial
     description = models.CharField(blank=True, null=True) # initial
-    mode = models.TextField(choices=ObjectiveModeChoices) # initial
+    mode = models.TextField(choices=ObjectiveModeChoices.choices) # initial
 
     class Meta:
         db_table = 'objective'
@@ -47,12 +47,12 @@ class KeyResult(BaseModel):
     goal = models.DecimalField(max_digits=14, decimal_places=2) # initial
     initial_value = models.DecimalField(max_digits=14, decimal_places=2) # initial
     description = models.TextField(blank=True, null=True) # initial
-    format = models.TextField(choices=KeyResultFormatChoices) # initial
+    format = models.TextField(choices=KeyResultFormatChoices.choices) # initial
     objective = models.ForeignKey(Objective, models.CASCADE) # initial
     team = models.ForeignKey(Team, models.CASCADE, blank=True, null=True) # initial
     owner = models.ForeignKey(User, models.CASCADE) # initial
-    type = models.TextField(choices=KeyResultTypeChoices) # initial
-    mode = models.TextField(choices=KeyResultModeChoices) # initial
+    type = models.TextField(choices=KeyResultTypeChoices.choices) # initial
+    mode = models.TextField(choices=KeyResultModeChoices.choices) # initial
     comment_count = models.JSONField() # initial
     last_updated_by = models.JSONField(blank=True, null=True) # initial
     support_team = models.ManyToManyField(User, through='KeyResultSupportTeamMembersUser', related_name='suport_team_key_result') # initial
@@ -75,7 +75,7 @@ class KeyResultCheckIn(BaseModel):
 
 
 class KeyResultCheckMark(BaseModel):
-    state = models.TextField(choices=KeyResultCheckMarkStateChoices) # initial
+    state = models.TextField(choices=KeyResultCheckMarkStateChoices.choices) # initial
     description = models.TextField() # initial
     key_result = models.ForeignKey(KeyResult, models.CASCADE) # initial
     user = models.ForeignKey(User, models.CASCADE) # initial
@@ -89,7 +89,7 @@ class KeyResultComment(BaseModel):
     text = models.TextField(blank=True, null=True) # initial
     key_result = models.ForeignKey(KeyResult, models.CASCADE) # initial
     user = models.ForeignKey(User, models.CASCADE) # initial
-    type = models.TextField(choices=KeyResultCommentTypeChoices) # initial
+    type = models.TextField(choices=KeyResultCommentTypeChoices.choices) # initial
     extra = models.TextField(blank=True, null=True)  # initial
     parent = models.ForeignKey('self', models.CASCADE, blank=True, null=True) # initial
 
