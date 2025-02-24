@@ -40,8 +40,10 @@ class TaskViewset(viewsets.ViewSet):
         date_range = TranslateRelativeDate(
             timezone, last=last, since=since, upto=upto
         ).date_range
+    
+        if date_range:
+            filter &= Q(created_at__range=date_range)
         
-        filter &= Q(created_at__range=date_range)
         filter &= Q(deleted_at__isnull=True)
             
         tasks = tasks.filter(filter)

@@ -13,6 +13,7 @@ class WrongKeywordException(Exception):
 
 class TranslateRelativeDate:
     def __init__(self, timezone, last, since, upto):
+        self.date_range = None
         if last:
             time_relative, keyword = last.split(' ')
             now = timezone.now()
