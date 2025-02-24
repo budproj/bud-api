@@ -45,5 +45,4 @@ urlpatterns = [
     path('', include('okr.urls'))
 ]
 
-if DEBUG:
-    urlpatterns += swagger_paths
+urlpatterns += swagger_paths
