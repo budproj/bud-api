@@ -4,7 +4,7 @@ from django.utils import timezone
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 
-from task_manager.models import Task, Team
+from task_manager.models import Task
 from task_manager.serializers.task_serializer import TaskSerializer
 
 from api.utils.translate_datetime import TranslateRelativeDate
@@ -50,7 +50,7 @@ class TaskViewset(viewsets.ViewSet):
         serializer = TaskSerializer(tasks, many=True)
         return Response(serializer.data)
 
-    def post(self, request, team_id=None):
+    def create(self, request, team_id=None):
         data = request.data.copy()
         serializer = TaskSerializer(data=data, context={'team_id', team_id})
 
