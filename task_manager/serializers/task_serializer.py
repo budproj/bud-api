@@ -5,6 +5,7 @@ from .task_history_serializer import TaskHistorySerializer
 class TaskSerializer(ModelSerializer):
     history = TaskHistorySerializer(many=True, read_only=True)
     users_related = SerializerMethodField()
+    owner_full_name = SerializerMethodField()
     
     class Meta:
         model = Task
@@ -32,3 +33,8 @@ class TaskSerializer(ModelSerializer):
             'created_at': obj.created_at,
             'updated_at': obj.updated_at,
         }
+    
+    def get_owner_full_name(self, obj):
+        if obj.owner:
+            return f"{obj.owner.first_name} {obj.owner.last_name}".strip()
+        return None
