@@ -3,19 +3,15 @@ from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from rest_framework import viewsets, status
 from rest_framework.response import Response
+
 from task_manager.models import Task, Team
-from task_manager.serializers import TaskSerializer
+from task_manager.serializers.task_serializer import TaskSerializer
+
 from api.utils.translate_datetime import TranslateRelativeDate
 
-class TaskViewset(viewsets.ModelViewSet):
+class TaskViewset(viewsets.ViewSet):
     serializer_class = TaskSerializer
 
-    def get_queryset(self):
-        team_id = self.kwargs.get("team_id")
-        if not team_id:
-            return Task.objects.none()
-        
-        return Task.objects.filter(team_id__id=team_id, deleted_at__isnull=True)
     def list(self, request, team_id=None):
         if not team_id:
             return Response('Team ID is required.', status=status.HTTP_400_BAD_REQUEST)
@@ -28,28 +24,24 @@ class TaskViewset(viewsets.ModelViewSet):
 
         # filter by KR
         key_result_id = request.query_params.get('kr')
-        if key_result_id:
+        if key_result_id is not None and key_result_id != '':
             filter &= Q(key_result_id__id=key_result_id)
 
         # filter by cycle
         cycle = request.query_params.get('cycle')
-        if cycle:
-            filter &= Q(key_result_id__objective__cycle=cycle)
+        if cycle is not None and cycle != '':
+            filter &= Q(cycle__cadence=cycle)
 
         # filter by date
         last = request.query_params.get('last')
         since = request.query_params.get('since')
         upto = request.query_params.get('upto')
         
-        if since and upto:
-            now = timezone.now()
-            date_start, date_end = TranslateRelativeDate.between(now, since, upto)
-            filter &= Q(created_at__range=(date_start, date_end))
-        elif since:
-            now = timezone.now()
-            date_start, date_end = TranslateRelativeDate.since(now, since)
-            filter &= Q(created_at__range=(date_start, date_end))
-
+        date_range = TranslateRelativeDate(
+            timezone, last=last, since=since, upto=upto
+        ).date_range
+        
+        filter &= Q(created_at__range=date_range)
         filter &= Q(deleted_at__isnull=True)
             
         tasks = tasks.filter(filter)
@@ -57,13 +49,8 @@ class TaskViewset(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def post(self, request, team_id=None):
-        # if not request.user.is_authenticated:
-        #    return Response({'error': 'Authentication required.'}, status=status.HTTP_401_UNAUTHORIZED)
-
-        team = get_object_or_404(Team, id=team_id)
-
         data = request.data.copy()
-        serializer = TaskSerializer(data=data)
+        serializer = TaskSerializer(data=data, context={'team_id', team_id})
 
         if serializer.is_valid():
             serializer.save()
@@ -71,13 +58,14 @@ class TaskViewset(viewsets.ModelViewSet):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def get_one(self, request, team_id, task_id):
-        task = get_object_or_404(Task.objects.prefetch_related('history'), id=task_id)
-        serializer = TaskSerializer(task)
+    def get_one(self, request, team_id, pk):
+        task = get_object_or_404(Task.objects.prefetch_related('history'), id=pk)
+        serializer = TaskSerializer(task, context={'team_id', team_id})
         return Response(serializer.data)
     
-    def destroy(self, request, team_id, pk=None):
-        task = get_object_or_404(Task, id=pk)
+    
+    def delete(self, request, team_id, task_id):
+        task = get_object_or_404(Task, id=task_id)
 
         if task.deleted_at:
             return Response(
@@ -89,16 +77,18 @@ class TaskViewset(viewsets.ModelViewSet):
 
         task.delete_task(user=user)
 
-        serializer = TaskSerializer(task)
+        serializer = TaskSerializer(task, context={'team_id', team_id})
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def update(self, request, pk=None, team_id=None):
+        try:
+            task = Task.objects.get(pk=pk, team_id=team_id)
+        except Task.DoesNotExist:
+            return Response({"error": "Task not found"}, status=404)
 
-    def put(self, request, team_id, task_id):
-        task = get_object_or_404(Task, id=task_id)
         serializer = TaskSerializer(task, data=request.data, partial=True)
-
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
       

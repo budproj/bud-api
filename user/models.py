@@ -40,7 +40,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     linked_in_profile_address = models.CharField(blank=True, null=True) # initial
     about = models.TextField(blank=True, null=True) # initial
     email = models.TextField(db_collation="und-x-icu", unique=True) # initial
-    status = models.TextField(choices=UserStatusChoices)  # initial
+    status = models.TextField(choices=UserStatusChoices.choices)  # initial
     created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True) # initial
     updated_at = models.DateTimeField(auto_now=True, blank=True, null=True) # initial
     deleted_at = models.DateTimeField(null=True, blank=True)
@@ -53,18 +53,18 @@ class User(AbstractBaseUser, PermissionsMixin):
     user_permissions = None
     password = None
     last_login = None
-    is_active = None
+    is_active = None # type: ignore
     is_superuser = None
     USERNAME_FIELD = 'email'
 
     def __str__(self):
-        return self.id + ' | ' + self.first_name + ' ' + self.last_name if self.last_name != None else ""
+        return f'{self.id} | {self.first_name} {self.last_name}'
     
     class Meta:
         db_table = 'user'
 
 class UserSetting(BaseModel):
-    key = models.TextField(choices=UserSettingsKeyChoices) # initial
+    key = models.TextField(choices=UserSettingsKeyChoices.choices) # initial
     value = models.CharField() # initial
     user = models.ForeignKey(User, models.DO_NOTHING, db_column='user_id') # initial
     preferences = models.JSONField() # initial

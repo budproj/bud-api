@@ -77,10 +77,10 @@ class TranslateRelativeDate:
                 raise WrongKeywordException
 
     def _since(self, now, date):
-        return datetime.strptime(date).date(), now
+        return datetime.strptime(date, "%Y-%m-%d").date(), now
 
     def _between(self, date_start, date_end):
-        return datetime.strptime(date_start).date(), datetime.strptime(date_end).date()
+        return datetime.strptime(date_start, "%Y-%m-%d").date(), datetime.strptime(date_end, "%Y-%m-%d").date()
 
 
 # Keyword

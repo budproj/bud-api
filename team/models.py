@@ -17,7 +17,7 @@ class Team(BaseModel):
     parent = models.ForeignKey('self', models.CASCADE, blank=True, null=True, db_column='parent_id') # initial
     owner = models.ForeignKey(User, models.CASCADE,null=False, blank=False, db_column='owner_id') # initial
     users = models.ManyToManyField(User, through='TeamUsersUser', related_name='Team_users') # initial
-    gender = models.TextField(choices=GENDER) # initial
+    gender = models.TextField(choices=GENDER.choices) # initial
     
     class Meta:
         db_table = 'team'
