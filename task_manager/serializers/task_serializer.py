@@ -1,4 +1,5 @@
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
+from okr.serializers.key_result_serializer import KeyResultSerializer
 from task_manager.models import Task
 from .task_history_serializer import TaskHistorySerializer
 
@@ -6,6 +7,7 @@ class TaskSerializer(ModelSerializer):
     history = TaskHistorySerializer(many=True, read_only=True)
     users_related = SerializerMethodField()
     owner_full_name = SerializerMethodField()
+    key_result = KeyResultSerializer(read_only=True)
     
     class Meta:
         model = Task
@@ -38,3 +40,4 @@ class TaskSerializer(ModelSerializer):
         if obj.owner:
             return f"{obj.owner.first_name} {obj.owner.last_name}".strip()
         return None
+    
