@@ -30,5 +30,4 @@ class KeyResultSerializer(ModelSerializer):
             'confidence': checkin.confidence,
             'comment': checkin.comment,
             'user': checkin.user_id, # type: ignore - Campo gerado automaticamente no django
-            'parent': checkin.parent,
         }
