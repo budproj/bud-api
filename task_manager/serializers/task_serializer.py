@@ -3,7 +3,14 @@ from okr.serializers.key_result_serializer import KeyResultSerializer
 from task_manager.models import Task
 from .task_history_serializer import TaskHistorySerializer
 
-class TaskSerializer(ModelSerializer):
+class TaskSerializer(ModelSerializer):    
+    class Meta:
+        model = Task
+        fields = '__all__'
+        read_only = ['created_at', 'update_at']
+
+    
+class TaskReadSerializer(ModelSerializer):
     history = TaskHistorySerializer(many=True, read_only=True)
     users_related = SerializerMethodField()
     owner_full_name = SerializerMethodField()
@@ -12,7 +19,7 @@ class TaskSerializer(ModelSerializer):
     class Meta:
         model = Task
         fields = '__all__'
-        read_only = ['team_id', 'created_at', 'update_at', 'deleted_at']
+        read_only = '__all__'
         
     def get_users_related(self, obj):
         data = []
@@ -40,4 +47,3 @@ class TaskSerializer(ModelSerializer):
         if obj.owner:
             return f"{obj.owner.first_name} {obj.owner.last_name}".strip()
         return None
-    

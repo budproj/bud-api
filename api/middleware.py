@@ -11,8 +11,8 @@ class AuthenticationMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
         self.excluded_paths = [
-            re.compile(r"^/static/"),
-            re.compile(r"^/swagger/"), 
+            re.compile(r"^/static"),
+            re.compile(r"^/swagger"), 
         ]
 
     def __call__(self, request):
