@@ -8,7 +8,7 @@ from okr.models import KeyResult, Cycle
 class KeyResultViewset(ModelViewSet):
 
     def list(self, request, team_id=None, objective_id=None):
-        queryset = KeyResult.objects.filter(deleted_at=None, team__id=team_id)
+        queryset = KeyResult.objects.filter(deleted_at=None, team__id=team_id, objective__cycle__active=True)
 
         if objective_id not in [None, '0']:
             queryset = queryset.filter(objective__id=objective_id)
