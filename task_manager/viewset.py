@@ -4,8 +4,8 @@ from django.utils import timezone
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 
-from task_manager.models import Task, Team
-from task_manager.serializers.task_serializer import TaskSerializer
+from task_manager.models import Task
+from task_manager.serializers.task_serializer import TaskSerializer, TaskReadSerializer
 
 from api.utils.translate_datetime import TranslateRelativeDate
 
@@ -47,10 +47,10 @@ class TaskViewset(viewsets.ViewSet):
         filter &= Q(deleted_at__isnull=True)
             
         tasks = tasks.filter(filter)
-        serializer = TaskSerializer(tasks, many=True)
+        serializer = TaskReadSerializer(tasks, many=True)
         return Response(serializer.data)
 
-    def post(self, request, team_id=None):
+    def create(self, request, team_id=None):
         data = request.data.copy()
         serializer = TaskSerializer(data=data, context={'team_id', team_id})
 
@@ -62,7 +62,7 @@ class TaskViewset(viewsets.ViewSet):
 
     def get_one(self, request, team_id, pk):
         task = get_object_or_404(Task.objects.prefetch_related('history'), id=pk)
-        serializer = TaskSerializer(task, context={'team_id', team_id})
+        serializer = TaskReadSerializer(task, context={'team_id', team_id})
         return Response(serializer.data)
     
     
@@ -87,8 +87,8 @@ class TaskViewset(viewsets.ViewSet):
             task = Task.objects.get(pk=pk, team_id=team_id)
         except Task.DoesNotExist:
             return Response({"error": "Task not found"}, status=404)
-
         serializer = TaskSerializer(task, data=request.data, partial=True)
+        
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)

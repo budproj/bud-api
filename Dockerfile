@@ -25,4 +25,4 @@ EXPOSE 8888
 
 RUN python manage.py collectstatic
 
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8888"]
+CMD ["gunicorn", "--workers", "3", "--bind", "0.0.0.0:8888", "api.wsgi:application"]
