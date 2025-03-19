@@ -1,12 +1,9 @@
 name: test
 
 on:
-  pull_request:
-    branches: [ $default-branch ]
+  push:
 
 jobs:
-  deploy:
+  test:
     uses: budproj/github-actions/.github/workflows/ci.yaml@feat/ci
-    with:
-      environment: ${{ inputs.environment }}
     secrets: inherit
