@@ -32,7 +32,7 @@ class Task(BaseModel):
         blank=False,
     )
     title = models.TextField(null=False, blank=False)
-    description = models.TextField(null=False, blank=False)
+    description = models.TextField(null=True, blank=True)
     priority = models.IntegerField(
         choices=TaskPriorityChoices.choices, null=False, blank=True
     )

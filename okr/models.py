@@ -62,7 +62,7 @@ class KeyResult(BaseModel):
 
 
 class KeyResultCheckIn(BaseModel):
-    value = models.DecimalField(max_digits=14, decimal_places=2) # initial
+    value = models.FloatField() # initial
     confidence = models.IntegerField() # initial
     key_result = models.ForeignKey(KeyResult, models.CASCADE) # initial
     user = models.ForeignKey(User, models.CASCADE) # initial
