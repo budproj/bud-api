@@ -13,7 +13,7 @@ class TaskViewset(viewsets.ViewSet):
     serializer_class = TaskSerializer
 
     def list(self, request):
-        if not request.query_params.get('team_id') and not request.query_params.get('user_id') and not request.query_params.get('kr'):
+        if not request.query_params.get('teamId') and not request.query_params.get('userId') and not request.query_params.get('kr'):
             return Response('Some required ids is not avaiable.', status=status.HTTP_400_BAD_REQUEST)
 
         tasks = Task.objects.all()
