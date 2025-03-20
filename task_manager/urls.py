@@ -1,10 +1,23 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework.urlpatterns import format_suffix_patterns
+from rest_framework.routers import DefaultRouter
 from task_manager.viewset import TaskViewset
 
-urlpatterns = [
-    path('<team_id>/task/list', TaskViewset.as_view({"get": "list"})),
-    path('<team_id>/task/get/<uuid:pk>', TaskViewset.as_view({"get": "get_one"})),
-    path('<team_id>/task/delete/<uuid:task_id>', TaskViewset.as_view({"delete": "delete"})),
-    path('<team_id>/task/update/<uuid:pk>', TaskViewset.as_view({"put": "update"})),
-    path('<team_id>/task/create', TaskViewset.as_view({"post": "create"}))
-]
+router = DefaultRouter()
+router.register(r'task', TaskViewset, basename="task")
+
+task_list = TaskViewset.as_view({
+    'get': 'list',
+    'post': 'create'
+})
+
+task_detail = TaskViewset.as_view({
+    'get': 'get_one',
+    'put': 'update',
+    'delete': 'delete'
+})
+
+urlpatterns = format_suffix_patterns([
+    path('task/', task_list, name='task-list'),
+    path('task/<uuid:task_id>', task_detail, name='task-detail'),
+])

@@ -12,15 +12,22 @@ from api.utils.translate_datetime import TranslateRelativeDate
 class TaskViewset(viewsets.ViewSet):
     serializer_class = TaskSerializer
 
-    def list(self, request, team_id=None):
-        if not team_id:
-            return Response('Team ID is required.', status=status.HTTP_400_BAD_REQUEST)
+    def list(self, request):
+        if not request.query_params.get('team_id') and not request.query_params.get('user_id') and not request.query_params.get('kr'):
+            return Response('Some required ids is not avaiable.', status=status.HTTP_400_BAD_REQUEST)
 
         tasks = Task.objects.all()
         filter = Q()
 
         # filter by team - required
-        filter &= Q(team_id__id=team_id)
+        team_id = request.query_params.get('teamId')
+        if team_id is not None and team_id != '':
+            filter &= Q(team_id__id=team_id)
+        
+        # filter by user - required
+        user_id = request.query_params.get('userId')
+        if user_id is not None and user_id != '':
+            filter &= Q(user_id__id=user_id)
 
         # filter by KR
         key_result_id = request.query_params.get('kr')
@@ -45,7 +52,7 @@ class TaskViewset(viewsets.ViewSet):
             filter &= Q(created_at__range=date_range)
         
         filter &= Q(deleted_at__isnull=True)
-            
+        
         tasks = tasks.filter(filter)
         serializer = TaskReadSerializer(tasks, many=True)
         return Response(serializer.data)
@@ -82,9 +89,9 @@ class TaskViewset(viewsets.ViewSet):
         serializer = TaskSerializer(task, context={'team_id', team_id})
         return Response(serializer.data, status=status.HTTP_200_OK)
     
-    def update(self, request, pk=None, team_id=None):
+    def update(self, request, task_id=None, team_id=None):
         try:
-            task = Task.objects.get(pk=pk, team_id=team_id)
+            task = Task.objects.get(id=task_id, team_id=team_id)
         except Task.DoesNotExist:
             return Response({"error": "Task not found"}, status=404)
         serializer = TaskSerializer(task, data=request.data, partial=True)
