@@ -3,7 +3,7 @@ from rest_framework.urlpatterns import format_suffix_patterns
 from rest_framework.routers import DefaultRouter
 from task_manager.viewset import TaskViewset
 
-router = DefaultRouter()
+router = DefaultRouter(trailing_slash=True)
 router.register(r'task', TaskViewset, basename="task")
 
 task_list = TaskViewset.as_view({
