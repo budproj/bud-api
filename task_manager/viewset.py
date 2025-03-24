@@ -85,15 +85,12 @@ class TaskViewset(viewsets.ViewSet):
     def update(self, request, task_id=None, team_id=None):
         try:
             task = get_object_or_404(Task, id=task_id)
-            if not task:
-                return Response({"error": "Task not found"}, status=404)
         except Task.DoesNotExist:
             return Response({"error": "Task not found"}, status=404)
-        data = request.data.copy()
-        serializer = TaskSerializer(data=data, partial=True)
+        serializer = TaskSerializer(task, data=request.data, partial=True)
         
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.data)
         return Response(serializer.errors, status=400)
       
