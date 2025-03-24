@@ -82,9 +82,9 @@ class TaskViewset(viewsets.ViewSet):
         serializer = TaskSerializer(task, context={'team_id', team_id})
         return Response(serializer.data, status=status.HTTP_200_OK)
     
-    def update(self, request, pk=None, team_id=None):
+    def update(self, request, task_id=None, team_id=None):
         try:
-            task = Task.objects.get(pk=pk, team_id=team_id)
+            task = get_object_or_404(Task, id=task_id)
         except Task.DoesNotExist:
             return Response({"error": "Task not found"}, status=404)
         serializer = TaskSerializer(task, data=request.data, partial=True)
