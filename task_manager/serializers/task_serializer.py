@@ -1,6 +1,7 @@
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
 from okr.serializers.key_result_serializer import KeyResultSerializer
 from task_manager.models import Task
+from user.models import User
 from .task_history_serializer import TaskHistorySerializer
 
 class TaskSerializer(ModelSerializer):    
@@ -23,9 +24,15 @@ class TaskReadSerializer(ModelSerializer):
         
     def get_users_related(self, obj):
         data = []
-        data.append(self.obj_user(obj.owner))
-        for i in obj.support_team:
-            data.append(self.obj_user(i))
+        
+        if obj.owner:
+            data.append(self.obj_user(obj.owner))
+    
+        if obj.support_team:
+            users = User.objects.filter(id__in=obj.support_team)
+            for user in users:
+                data.append(self.obj_user(user))
+    
         return data
     
     def obj_user(self, obj):
