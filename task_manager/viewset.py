@@ -12,15 +12,15 @@ from api.utils.translate_datetime import TranslateRelativeDate
 class TaskViewset(viewsets.ViewSet):
     serializer_class = TaskSerializer
 
-    def list(self, request, team_id=None):
-        if not team_id:
-            return Response('Team ID is required.', status=status.HTTP_400_BAD_REQUEST)
-
+    def list(self, request):
+        
         tasks = Task.objects.all()
         filter = Q()
 
         # filter by team - required
-        filter &= Q(team_id__id=team_id)
+        team_id = request.query_params.get('teamId')
+        if team_id is not None and team_id != '':
+            filter &= Q(team_id__id=team_id)
 
         # filter by KR
         key_result_id = request.query_params.get('kr')
@@ -66,7 +66,7 @@ class TaskViewset(viewsets.ViewSet):
         return Response(serializer.data)
     
     
-    def delete(self, request, team_id, task_id):
+    def delete(self, request, task_id):
         task = get_object_or_404(Task, id=task_id)
 
         if task.deleted_at:
@@ -79,7 +79,7 @@ class TaskViewset(viewsets.ViewSet):
 
         task.delete_task(user=user)
 
-        serializer = TaskSerializer(task, context={'team_id', team_id})
+        serializer = TaskSerializer(task, context={'id', task_id})
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     def update(self, request, task_id=None, team_id=None):
