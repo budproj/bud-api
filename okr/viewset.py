@@ -15,6 +15,15 @@ class KeyResultViewset(ModelViewSet):
 
         serializer = KeyResultSerializer(queryset, many=True)
         return Response(serializer.data)
+    
+    def list_by_user(self, request, owner=None, objective_id=None):
+        queryset = KeyResult.objects.filter(deleted_at=None, owner=owner, objective__cycle__active=True, team__isnull=False)
+
+        if objective_id not in [None, '0']:
+            queryset = queryset.filter(objective__id=objective_id)
+
+        serializer = KeyResultSerializer(queryset, many=True)
+        return Response(serializer.data)
 
 class CycleViewset(ModelViewSet):
     
