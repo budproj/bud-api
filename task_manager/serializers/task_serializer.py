@@ -14,6 +14,7 @@ class TaskSerializer(ModelSerializer):
 class TaskReadSerializer(ModelSerializer):
     history = TaskHistorySerializer(many=True, read_only=True)
     users_related = SerializerMethodField()
+    support_team = SerializerMethodField()
     owner_full_name = SerializerMethodField()
     key_result = KeyResultSerializer(read_only=True)
     
@@ -27,6 +28,16 @@ class TaskReadSerializer(ModelSerializer):
         
         if obj.owner:
             data.append(self.obj_user(obj.owner))
+    
+        if obj.support_team:
+            users = User.objects.filter(id__in=obj.support_team)
+            for user in users:
+                data.append(self.obj_user(user))
+    
+        return data
+    
+    def get_support_team(self, obj):
+        data = []
     
         if obj.support_team:
             users = User.objects.filter(id__in=obj.support_team)
