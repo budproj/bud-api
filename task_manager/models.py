@@ -43,6 +43,7 @@ class Task(BaseModel):
     tags = ArrayField(models.TextField(), blank=True, null=True)
     orderindex = models.IntegerField(null=True, blank=True)
 
+    """
     def save(self, *args, **kwargs):
         user = kwargs.pop('user', None)
 
@@ -73,6 +74,7 @@ class Task(BaseModel):
 
                 if old_value != new_value:
                     self._register_history(field_name, old_value, new_value, user)
+    """
 
     def delete_task(self, user=None):
         if not self.deleted_at:
