@@ -1,14 +1,15 @@
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
+
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 
-from api.utils.decorators.filter_queryset import query_filter_allowed
-from task_manager.models import Task
 from task_manager.serializers.task_serializer import TaskSerializer, TaskReadSerializer
+from task_manager.models import Task
 
 from api.utils.translate_datetime import TranslateRelativeDate
+from api.utils.decorators.filter_queryset import query_filter_allowed
 
 class TaskViewset(viewsets.ViewSet):
     serializer_class = TaskSerializer
@@ -75,4 +76,3 @@ class TaskViewset(viewsets.ViewSet):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=400)
-      

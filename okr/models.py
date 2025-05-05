@@ -1,5 +1,3 @@
-import uuid6
-
 from django.db import models
 
 from api.base.base_model import BaseModel
