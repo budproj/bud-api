@@ -100,6 +100,7 @@ class Task(BaseModel):
                     new_state=str(new_value) if new_value is not None else 'NULL',
                     author=user.username if user else 'System',
                 )
+    
 
     def __str__(self):
         return str(self.id)
@@ -113,7 +114,7 @@ class TaskHistory(BaseModel):
     field = models.TextField(null=False, blank=False)
     old_state = models.TextField(null=True, blank=True)
     new_state = models.TextField(null=True, blank=True)
-    author = models.TextField(null=False, blank=False)
+    author = models.ForeignKey(User, on_delete=models.CASCADE, null=False, blank=False)
 
     def __str__(self):
         return f'History of Task {self.task} - {self.field}'
@@ -121,3 +122,18 @@ class TaskHistory(BaseModel):
     class Meta:
         db_table = 'task_history'
         verbose_name_plural = 'Task Histories'
+
+
+class TaskComments(BaseModel):
+    text = models.TextField(blank=True, null=True)
+    task = models.ForeignKey(Task, models.CASCADE)
+    user = models.ForeignKey(User, models.CASCADE)
+    parent = models.ForeignKey('self', models.CASCADE, blank=True, null=True)
+
+    class Meta:
+        db_table = 'task_comment'
+        verbose_name_plural = 'Task Comments'
+
+    def soft_delete(self):
+        self.deleted_at = now()
+        self.save()
