@@ -19,6 +19,7 @@ class TaskViewset(viewsets.ViewSet):
         'team_id__id',
         'key_result_id__id',
         'deleted_at__isnull',
+        'tasks_user',
     ])
     def list(self, request):
         last = request.query_params.get('last')
