@@ -20,6 +20,7 @@ class Task(BaseModel):
         blank=True,
         null=True,
         db_column='key_result_id',
+        related_name='task_key_result',
     )
     cycle = models.ForeignKey(
         Cycle, null=True, blank=True, on_delete=models.CASCADE, db_column='cycle_id'
@@ -100,10 +101,6 @@ class Task(BaseModel):
                     new_state=str(new_value) if new_value is not None else 'NULL',
                     author=user.username if user else 'System',
                 )
-    
-
-    def __str__(self):
-        return str(self.id)
 
     class Meta:
         db_table = 'task'

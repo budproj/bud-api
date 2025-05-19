@@ -1,9 +1,12 @@
+from django.db.models import Q
+from rest_framework import status
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 
 from okr.serializers.key_result_serializer import KeyResultSerializer
 from okr.serializers.cycle_serializer import CycleSerializer
 from okr.models import KeyResult, Cycle
+from okr.serializers.key_result_task_serializer import KeyResultTaskSerializer
 
 class KeyResultViewset(ModelViewSet):
 
@@ -24,6 +27,15 @@ class KeyResultViewset(ModelViewSet):
 
         serializer = KeyResultSerializer(queryset, many=True)
         return Response(serializer.data)
+    
+    def list_by_user_with_tasks(self, request, pk):
+        queryset = KeyResult.objects.all()
+        queryset = queryset.filter(
+            Q(owner__id=pk) | 
+            Q(support_team__in=[pk])
+        )
+        serializer = KeyResultTaskSerializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class CycleViewset(ModelViewSet):
     

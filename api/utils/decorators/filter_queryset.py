@@ -14,9 +14,10 @@ def query_filter_allowed(fields: List):
                 match(key):
                     case 'deleted_at__isnull':
                         value = bool(value)
-                
-                if value is not None and value != '':
-                    filter &= Q(**{key: value})
+                        filter &= Q(**{key: value})
+                    case _:
+                        if value is not None and value != '':
+                            filter &= Q(**{key: value})
             self.queryset = self.queryset.filter(filter)
             return func(*args, **kwargs)
         return wrapper
