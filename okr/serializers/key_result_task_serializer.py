@@ -25,7 +25,7 @@ class KeyResultTaskSerializer(serializers.ModelSerializer):
     def obj_task(self, obj):
         return {
             "id": str(obj.id),
-            "team_id": str(obj.team.id),
+            "team_id": str(obj.team.id) if obj.team_id else None,
             "owner": str(obj.owner.id),
             "owner_full_name": f"{obj.owner.first_name} {obj.owner.last_name}".strip(), 
             "status": obj.status,
