@@ -40,7 +40,7 @@ class KeyResultViewset(ModelViewSet):
             Q(owner__id=pk) | 
             Q(support_team__in=[pk])
         )
-        serializer = KeyResultTaskSerializer(queryset, many=True)
+        serializer = KeyResultTaskSerializer(queryset, many=True, context={'pk': pk})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class CycleViewset(ModelViewSet):
