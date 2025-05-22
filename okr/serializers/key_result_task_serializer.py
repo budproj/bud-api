@@ -13,11 +13,13 @@ class KeyResultTaskSerializer(serializers.ModelSerializer):
         read_only = ['id', 'created_at', 'updated_at']
         
     def get_kr_tasks(self, obj):
+        user_id = self.context.get('user_selected')
         data = []
         
+        print(user_id, obj.id)
         tasks = Task.objects.filter(
-            (Q(support_team__contains=[obj.pk]) & Q(key_result__id=obj.id) & Q(deleted_at__isnull=True)) | 
-            (Q(owner__id=obj.pk)) & Q(key_result__id=obj.id) & Q(deleted_at__isnull=True))
+            (Q(support_team__contains=[user_id]) & Q(key_result__id=obj.id) & Q(deleted_at__isnull=True)) | 
+            (Q(owner__id=user_id)) & Q(key_result__id=obj.id) & Q(deleted_at__isnull=True))
         for task in tasks:
             data.append(self.obj_task(task))
         return data
