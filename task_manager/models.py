@@ -7,8 +7,42 @@ from team.models import Team
 from okr.models import Cycle, KeyResult
 from user.models import User
 
+from django.db import connection
+
 from .enums import TaskStatusChoices, TaskPriorityChoices
 
+class TaskManager(models.Manager):
+    def check_if_task_owner_in_kr_team(self, task: str):
+        query = """
+            SELECT
+                tk.id,
+                CASE
+                    WHEN EXISTS (SELECT 1 FROM key_result WHERE id = tk.key_result_id AND owner_id = tk.owner_id) THEN 'owner'
+                    WHEN EXISTS (SELECT 1 FROM key_result_support_team_members_user WHERE key_result_id = tk.key_result_id AND user_id = tk.owner_id) THEN 'support_team_member'
+                    ELSE NULL 
+                END AS user_role
+            FROM
+                task tk
+            WHERE
+                tk.id = %s
+        """
+        
+        result = Task.objects.raw(query, [task])
+        
+        if result: 
+            return result
+        return None
+
+    def insert_user_in_kr_team_support(self, kr, user):
+        query = """
+            INSERT INTO
+                key_result_support_team_members_user
+                    (key_result_id, user_id)
+            VALUES
+                (%s, %s)
+        """
+        with connection.cursor() as cursor:
+            cursor.execute(query, [kr, user])
 
 class Task(BaseModel):
     team = models.ForeignKey(
@@ -43,6 +77,14 @@ class Task(BaseModel):
     attachments = ArrayField(models.TextField(), blank=True, null=True)
     tags = ArrayField(models.TextField(), blank=True, null=True)
     orderindex = models.IntegerField(null=True, blank=True)
+    objects = TaskManager()
+    
+    def save(self, *args, **kwargs): 
+        if self.key_result:
+            result = Task.objects.check_if_task_owner_in_kr_team(str(self.id))
+            if result and result[0].user_role not in ['owner', 'support_team_member']:
+                Task.objects.insert_user_in_kr_team_support(str(self.key_result.id), str(self.owner.id))
+        super().save(*args, **kwargs)
 
     """
     def save(self, *args, **kwargs):
@@ -79,28 +121,8 @@ class Task(BaseModel):
 
     def delete_task(self, user=None):
         if not self.deleted_at:
-            old_deleted_at = self.deleted_at
-
             self.deleted_at = now()
-
             self.save(update_fields=['deleted_at'])
-
-            self._register_history('deleted_at', old_deleted_at, self.deleted_at, user)
-
-    def _register_history(self, field, old_state, new_state, user):
-        for field in self._meta.fields:
-            field_name = field.name
-            old_value = getattr(old_state, field_name, None)
-            new_value = getattr(self, field_name, None)
-
-            if old_value != new_value:
-                TaskHistory.objects.create(
-                    task=self,
-                    field=field_name,
-                    old_state=str(old_value) if old_value is not None else 'NULL',
-                    new_state=str(new_value) if new_value is not None else 'NULL',
-                    author=user.username if user else 'System',
-                )
 
     class Meta:
         db_table = 'task'
