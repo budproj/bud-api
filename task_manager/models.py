@@ -80,11 +80,12 @@ class Task(BaseModel):
     objects = TaskManager()
     
     def save(self, *args, **kwargs): 
+        super().save(*args, **kwargs)
         if self.key_result:
             result = Task.objects.check_if_task_owner_in_kr_team(str(self.id))
             if result and result[0].user_role not in ['owner', 'support_team_member']:
                 Task.objects.insert_user_in_kr_team_support(str(self.key_result.id), str(self.owner.id))
-        super().save(*args, **kwargs)
+        
 
     """
     def save(self, *args, **kwargs):
