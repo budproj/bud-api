@@ -18,7 +18,7 @@ class KeyResultTaskSerializer(serializers.ModelSerializer):
         
         tasks = Task.objects.filter(
             (Q(support_team__contains=[user_id]) & Q(key_result__id=obj.id) & Q(deleted_at__isnull=True)) | 
-            (Q(owner__id=user_id)) & Q(key_result__id=obj.id) & Q(deleted_at__isnull=True))
+            (Q(owner__id=user_id)) & Q(key_result__id=obj.id) & Q(deleted_at__isnull=True)).order_by('id')
         for task in tasks:
             data.append(self.obj_task(task))
         return data
