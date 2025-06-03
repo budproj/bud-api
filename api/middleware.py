@@ -1,6 +1,7 @@
 from django.http import HttpResponse
 import re
 from api.jwt import verify_token
+from user.models import User
 
 class AuthenticationMiddleware:
     """Middleware responsable to authenticate user and check user permissions
@@ -32,6 +33,11 @@ class AuthenticationMiddleware:
             if not decoded_token:
                 return HttpResponse('unauthorized', status=401)
 
+            try:
+                request.session['user'] = str(User.objects.get(authz_sub=decoded_token['sub']).id)
+            except User.DoesNotExist:
+                request.session['user'] = None
+                
             # add permissions to user session
             request.session['permissions'] = decoded_token['permissions']
         response = self.get_response(request)
