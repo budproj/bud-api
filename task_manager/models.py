@@ -90,7 +90,7 @@ class Task(BaseModel):
             is_new = True
             
         super().save(*args, **kwargs)
-        if not is_new and old_version:
+        if not is_new and old_version and user_id:
             excluded_from_history = ['updated_at', 'support_team']
             user = User.objects.get(id=user_id)
             for field in self._meta.fields:
@@ -119,7 +119,7 @@ class Task(BaseModel):
     def delete_task(self, user=None):
         if not self.deleted_at:
             self.deleted_at = now()
-            self.save(update_fields=['deleted_at'])
+            self.save()
 
     class Meta:
         db_table = 'task'
