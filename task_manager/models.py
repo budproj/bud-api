@@ -80,50 +80,46 @@ class Task(BaseModel):
     objects = TaskManager()
     
     def save(self, *args, **kwargs): 
+        is_new = False
+        old_version = None
+        user_id = kwargs.pop('usuario_logado', None)
+        
+        try:
+            old_version = Task.objects.get(pk=self.pk)
+        except Task.DoesNotExist:
+            is_new = True
+            
         super().save(*args, **kwargs)
+        if not is_new and old_version and user_id:
+            excluded_from_history = ['updated_at', 'support_team']
+            user = User.objects.get(id=user_id)
+            for field in self._meta.fields:
+                field_name = field.name
+                if field_name not in excluded_from_history:
+                    old_value = getattr(old_version, field_name, None)
+                    new_value = getattr(self, field_name, None)
+
+                    if old_value != new_value:
+                        self._register_history(self, field_name, old_value, new_value, user)
+                    
         if self.key_result:
             result = Task.objects.check_if_task_owner_in_kr_team(str(self.id))
             if result and result[0].user_role not in ['owner', 'support_team_member']:
                 Task.objects.insert_user_in_kr_team_support(str(self.key_result.id), str(self.owner.id))
-        
-
-    """
-    def save(self, *args, **kwargs):
-        user = kwargs.pop('user', None)
-
-        is_new = not bool(self.pk)
-
-        old_instance = None
-        if not is_new:
-            try:
-                old_instance = Task.objects.get(pk=self.pk)
-            except Task.DoesNotExist:
-                pass
-
-        super().save(*args, **kwargs)
-
-        if is_new:
-            TaskHistory.objects.create(
-                task=self,
-                field='created',
-                old_state='NULL',
-                new_state='Task criada',
-                author=user.username if user else 'System',
-            )
-        elif old_instance:
-            for field in self._meta.fields:
-                field_name = field.name
-                old_value = getattr(old_instance, field_name, None)
-                new_value = getattr(self, field_name, None)
-
-                if old_value != new_value:
-                    self._register_history(field_name, old_value, new_value, user)
-    """
+    
+    def _register_history(self, task, name, old, new, user):
+        TaskHistory.objects.create(
+            task=task,
+            field=name,
+            old_state=old,
+            new_state=new,
+            author=user if user else None,
+        )
 
     def delete_task(self, user=None):
         if not self.deleted_at:
             self.deleted_at = now()
-            self.save(update_fields=['deleted_at'])
+            self.save()
 
     class Meta:
         db_table = 'task'

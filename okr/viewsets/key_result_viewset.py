@@ -4,10 +4,9 @@ from rest_framework import status
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 
+from okr.models import KeyResult
 from okr.enums.key_result_choices import KeyResultModeChoices
 from okr.serializers.key_result_serializer import KeyResultSerializer
-from okr.serializers.cycle_serializer import CycleSerializer
-from okr.models import KeyResult, Cycle
 from okr.serializers.key_result_task_serializer import KeyResultTaskSerializer
 
 class KeyResultViewset(ModelViewSet):
@@ -42,11 +41,3 @@ class KeyResultViewset(ModelViewSet):
         )
         serializer = KeyResultTaskSerializer(queryset, many=True, context={'user_selected': pk})
         return Response(serializer.data, status=status.HTTP_200_OK)
-
-class CycleViewset(ModelViewSet):
-    
-    def list(self, request, team_id=None):
-        queryset = Cycle.objects.filter(deleted_at=None, team__id=team_id)
-        
-        serializer = CycleSerializer(queryset, many=True)
-        return Response(serializer.data)

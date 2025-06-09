@@ -9,7 +9,30 @@ class TaskSerializer(ModelSerializer):
         model = Task
         fields = '__all__'
         read_only = ['created_at', 'update_at']
+        
+    def save(self, **kwargs):
+        request = self.context.get('request')
+        usuario_logado = None
+        if request and request.session['user']:
+            usuario_logado = request.session['user']
+        kwargs['usuario_logado'] = usuario_logado
+        return super().save(**kwargs)
 
+    def create(self, validated_data):
+        usuario_para_modelo = validated_data.pop('usuario_logado', None)
+
+        instance = self.Meta.model(**validated_data)
+        instance.save(usuario_logado=usuario_para_modelo)
+        return instance
+
+    def update(self, instance, validated_data):
+        usuario_para_modelo = validated_data.pop('usuario_logado', None)
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        instance.save(usuario_logado=usuario_para_modelo)
+        return instance
     
 class TaskReadSerializer(ModelSerializer):
     history = TaskHistorySerializer(many=True, read_only=True)
