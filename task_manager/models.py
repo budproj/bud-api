@@ -12,27 +12,6 @@ from django.db import connection
 from .enums import TaskStatusChoices, TaskPriorityChoices
 
 class TaskManager(models.Manager):
-    def check_if_task_owner_in_kr_team(self, task: str):
-        query = """
-            SELECT
-                tk.id,
-                CASE
-                    WHEN EXISTS (SELECT 1 FROM key_result WHERE id = tk.key_result_id AND owner_id = tk.owner_id) THEN 'owner'
-                    WHEN EXISTS (SELECT 1 FROM key_result_support_team_members_user WHERE key_result_id = tk.key_result_id AND user_id = tk.owner_id) THEN 'support_team_member'
-                    ELSE NULL 
-                END AS user_role
-            FROM
-                task tk
-            WHERE
-                tk.id = %s
-        """
-        
-        result = Task.objects.raw(query, [task])
-        
-        if result: 
-            return result
-        return None
-
     def insert_user_in_kr_team_support(self, kr, user):
         query = """
             INSERT INTO
@@ -103,9 +82,12 @@ class Task(BaseModel):
                         self._register_history(self, field_name, old_value, new_value, user)
                     
         if self.key_result:
-            result = Task.objects.check_if_task_owner_in_kr_team(str(self.id))
-            if result and result[0].user_role not in ['owner', 'support_team_member']:
-                Task.objects.insert_user_in_kr_team_support(str(self.key_result.id), str(self.owner.id))
+            users = [str(self.owner.id)] + self.support_team # type: ignore - support_team: List(str)
+            result = User.objects.check_users_role(self.id, users) # type: ignore - function in user.models.CustomUserManager.check_users_role
+            for i in result:
+                if i.user_role not in ['owner', 'support_team_member']:
+                    Task.objects.insert_user_in_kr_team_support(str(self.key_result.id), str(i.id)) # type: ignore - function in task_manager.models.TaskManager.insert_user_in_kr_team_support
+                
     
     def _register_history(self, task, name, old, new, user):
         TaskHistory.objects.create(
