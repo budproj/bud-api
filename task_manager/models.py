@@ -83,7 +83,7 @@ class Task(BaseModel):
                     
         if self.key_result:
             users = [str(self.owner.id)] + self.support_team # type: ignore - support_team: List(str)
-            result = User.objects.check_users_role(self.id, users) # type: ignore - function in user.models.CustomUserManager.check_users_role
+            result = User.objects.check_users_role(str(self.key_result.id), users) # type: ignore - function in user.models.CustomUserManager.check_users_role
             for i in result:
                 if i.user_role not in ['owner', 'support_team_member']:
                     Task.objects.insert_user_in_kr_team_support(str(self.key_result.id), str(i.id)) # type: ignore - function in task_manager.models.TaskManager.insert_user_in_kr_team_support
