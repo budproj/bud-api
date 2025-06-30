@@ -14,6 +14,30 @@ from api.base.base_model import BaseModel
 
 
 class CustomUserManager(BaseUserManager):
+    def check_users_role(self, kr_id, list_users):
+        placeholders_ids = ', '.join(['%s'] * len(list_users))
+        
+        query = f"""
+            SELECT
+                us.id,
+                CASE
+                    WHEN EXISTS (SELECT 1 FROM key_result WHERE id = %s AND owner_id = us.id) THEN 'owner'
+                    WHEN EXISTS (SELECT 1 FROM key_result_support_team_members_user WHERE key_result_id = %s AND user_id = us.id) THEN 'support_team_member'
+                    ELSE NULL 
+                END AS user_role
+            FROM
+                public.user as us
+            WHERE
+                us.id IN ({placeholders_ids})
+        """
+        params = (kr_id, kr_id) + tuple(list_users) 
+        result = User.objects.raw(query, params)
+        
+        
+        if result: 
+            return result
+        return None
+    
     def create_user(self, email, password=None, **extra_fields):
         if not email:
             raise ValueError('The Email field must be set')
