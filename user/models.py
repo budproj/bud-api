@@ -10,7 +10,7 @@ from django.contrib.auth.models import (
     BaseUserManager,
     PermissionsMixin,
 )
-from api.base.base_model import BaseModel
+from api.models import BaseModel
 
 
 class CustomUserManager(BaseUserManager):

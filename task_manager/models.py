@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.postgres.fields import ArrayField
 from django.utils.timezone import now
 
-from api.base.base_model import BaseModel
+from api.models import BaseModel
 from team.models import Team
 from okr.models import Cycle, KeyResult
 from user.models import User

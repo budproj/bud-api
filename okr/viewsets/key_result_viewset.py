@@ -5,7 +5,6 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 
 from okr.models import KeyResult
-from okr.enums.key_result_choices import KeyResultModeChoices
 from okr.serializers.key_result_serializer import KeyResultSerializer
 from okr.serializers.key_result_task_serializer import KeyResultTaskSerializer
 
@@ -31,7 +30,7 @@ class KeyResultViewset(ModelViewSet):
     
     def list_by_user_with_tasks(self, request, pk):
         queryset = KeyResult.objects.filter(
-            mode=KeyResultModeChoices.PUBLISHED,
+            mode=KeyResult.KeyResultModeChoices.PUBLISHED,
             deleted_at__isnull=True,
             objective__cycle__active=True,
         )

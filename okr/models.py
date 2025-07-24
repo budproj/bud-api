@@ -1,114 +1,152 @@
 from django.db import models
 
-from api.base.base_model import BaseModel
+from api.models import BaseModel
 from team.models import Team
 from user.models import User
 
-from okr.enums.cycle_choices import CycleCadenceChoices
-from okr.enums.objective_choices import ObjectiveModeChoices
-from okr.enums.key_result_choices import (
-    KeyResultFormatChoices,
-    KeyResultTypeChoices,
-    KeyResultModeChoices,
-)
-from okr.enums.key_result_check_mark_choices import KeyResultCheckMarkStateChoices
-from okr.enums.key_result_comment_choices import KeyResultCommentTypeChoices
-
 
 class Cycle(BaseModel):
-    date_start = models.DateTimeField() # initial
-    date_end = models.DateTimeField() # initial
-    team = models.ForeignKey(Team, models.CASCADE) # initial
-    period = models.CharField() # initial
-    cadence = models.TextField(choices=CycleCadenceChoices.choices) # initial
-    parent = models.ForeignKey('self', models.DO_NOTHING, blank=True, null=True) # initial
-    active = models.BooleanField() # initial
+    class CycleCadenceChoices(models.TextChoices):
+        YEARLY = 'YEARLY'
+        QUARTERLY = 'QUARTERLY'
+    
+    date_start = models.DateTimeField()
+    date_end = models.DateTimeField()
+    team = models.ForeignKey(Team, models.CASCADE)
+    period = models.CharField()
+    cadence = models.TextField(choices=CycleCadenceChoices.choices)
+    parent = models.ForeignKey('self', models.DO_NOTHING, blank=True, null=True)
+    active = models.BooleanField()
 
     class Meta:
         db_table = 'cycle'
+        managed = False
 
 
 class Objective(BaseModel):
-    title = models.CharField() # initial
-    cycle = models.ForeignKey(Cycle, models.CASCADE) # initial
-    owner = models.ForeignKey(User, models.CASCADE) # initial
-    team = models.ForeignKey(Team, models.CASCADE, blank=True, null=True) # initial
-    description = models.CharField(blank=True, null=True) # initial
-    mode = models.TextField(choices=ObjectiveModeChoices.choices) # initial
+    class ObjectiveModeChoices(models.TextChoices):
+        COMPLETED = 'COMPLETED'
+        PUBLISHED = 'PUBLISHED'
+        DRAFT = 'DRAFT'
+        DELETED = 'DELETED'
+    
+    title = models.CharField()
+    cycle = models.ForeignKey(Cycle, models.CASCADE)
+    owner = models.ForeignKey(User, models.CASCADE)
+    team = models.ForeignKey(Team, models.CASCADE, blank=True, null=True)
+    description = models.CharField(blank=True, null=True)
+    mode = models.TextField(choices=ObjectiveModeChoices.choices)
 
     class Meta:
         db_table = 'objective'
+        managed = False
 
 
 class KeyResult(BaseModel):
-    title = models.CharField() # initial
-    goal = models.DecimalField(max_digits=14, decimal_places=2) # initial
-    initial_value = models.DecimalField(max_digits=14, decimal_places=2) # initial
-    description = models.TextField(blank=True, null=True) # initial
-    format = models.TextField(choices=KeyResultFormatChoices.choices) # initial
-    objective = models.ForeignKey(Objective, models.CASCADE) # initial
-    team = models.ForeignKey(Team, models.CASCADE, blank=True, null=True) # initial
-    owner = models.ForeignKey(User, models.CASCADE) # initial
-    type = models.TextField(choices=KeyResultTypeChoices.choices) # initial
-    mode = models.TextField(choices=KeyResultModeChoices.choices) # initial
-    comment_count = models.JSONField() # initial
-    last_updated_by = models.JSONField(blank=True, null=True) # initial
-    support_team = models.ManyToManyField(User, through='KeyResultSupportTeamMembersUser', related_name='suport_team_key_result') # initial
+    class KeyResultTypeChoices(models.TextChoices):
+        ASCENDING = 'ASCENDING'
+        DESCENDING = 'DESCENDING'
+    
+    class KeyResultFormatChoices(models.TextChoices):
+        NUMBER = 'NUMBER'
+        PERCENTAGE = 'PERCENTAGE'
+        COIN_BRL = 'COIN_BRL'
+        COIN_USD = 'COIN_USD'
+        COIN_EUR = 'COIN_EUR'
+        COIN_GBP = 'COIN_GBP'
+    
+    class KeyResultModeChoices(models.TextChoices):
+        COMPLETED = 'COMPLETED'
+        PUBLISHED = 'PUBLISHED'
+        DRAFT = 'DRAFT'
+        DELETED = 'DELETED'
+
+    title = models.CharField()
+    goal = models.DecimalField(max_digits=14, decimal_places=2)
+    initial_value = models.DecimalField(max_digits=14, decimal_places=2)
+    description = models.TextField(blank=True, null=True)
+    format = models.TextField(choices=KeyResultFormatChoices.choices)
+    objective = models.ForeignKey(Objective, models.CASCADE)
+    team = models.ForeignKey(Team, models.CASCADE, blank=True, null=True)
+    owner = models.ForeignKey(User, models.CASCADE)
+    type = models.TextField(choices=KeyResultTypeChoices.choices)
+    mode = models.TextField(choices=KeyResultModeChoices.choices)
+    comment_count = models.JSONField()
+    last_updated_by = models.JSONField(blank=True, null=True)
+    support_team = models.ManyToManyField(User, through='KeyResultSupportTeamMembersUser', related_name='suport_team_key_result')
 
     class Meta:
         db_table = 'key_result'
+        managed = False
 
 
 class KeyResultCheckIn(BaseModel):
-    value = models.FloatField() # initial
-    confidence = models.IntegerField() # initial
-    key_result = models.ForeignKey(KeyResult, models.CASCADE) # initial
-    user = models.ForeignKey(User, models.CASCADE) # initial
-    comment = models.TextField(blank=True, null=True) # initial
-    parent = models.OneToOneField('self', models.DO_NOTHING, blank=True, null=True) # initial
-    previous_state = models.JSONField(blank=True, null=True) # initial
+    value = models.FloatField()
+    confidence = models.IntegerField()
+    key_result = models.ForeignKey(KeyResult, models.CASCADE)
+    user = models.ForeignKey(User, models.CASCADE)
+    comment = models.TextField(blank=True, null=True)
+    parent = models.OneToOneField('self', models.DO_NOTHING, blank=True, null=True)
+    previous_state = models.JSONField(blank=True, null=True)
 
     class Meta:
         db_table = 'key_result_check_in'
+        managed = False
 
 
 class KeyResultCheckMark(BaseModel):
-    state = models.TextField(choices=KeyResultCheckMarkStateChoices.choices) # initial
-    description = models.TextField() # initial
-    key_result = models.ForeignKey(KeyResult, models.CASCADE) # initial
-    user = models.ForeignKey(User, models.CASCADE) # initial
-    assigned_user = models.ForeignKey(User, models.CASCADE, related_name='assigned_user_set', blank=True, null=True) # initial
+    class KeyResultCheckMarkStateChoices(models.TextChoices):
+        CHECKED = 'CHECKED'
+        UNCHECKED = 'UNCHECKED'
+    state = models.TextField(choices=KeyResultCheckMarkStateChoices.choices)
+    description = models.TextField()
+    key_result = models.ForeignKey(KeyResult, models.CASCADE)
+    user = models.ForeignKey(User, models.CASCADE)
+    assigned_user = models.ForeignKey(User, models.CASCADE, related_name='assigned_user_set', blank=True, null=True)
 
     class Meta:
         db_table = 'key_result_check_mark'
+        managed = False
 
 
 class KeyResultComment(BaseModel):
-    text = models.TextField(blank=True, null=True) # initial
-    key_result = models.ForeignKey(KeyResult, models.CASCADE) # initial
-    user = models.ForeignKey(User, models.CASCADE) # initial
-    type = models.TextField(choices=KeyResultCommentTypeChoices.choices) # initial
-    extra = models.TextField(blank=True, null=True)  # initial
-    parent = models.ForeignKey('self', models.CASCADE, blank=True, null=True) # initial
+    class KeyResultCommentTypeChoices(models.TextChoices):
+        SUGGESTION = 'suggestion'
+        PRAISAL = 'praisal'
+        QUESTION = 'question'
+        ALIGNMENT = 'alignment'
+        IMPROVEMENT = 'improvement'
+        ISSUE = 'issue'
+        COMMENT = 'comment'
+        
+    text = models.TextField(blank=True, null=True)
+    key_result = models.ForeignKey(KeyResult, models.CASCADE)
+    user = models.ForeignKey(User, models.CASCADE)
+    type = models.TextField(choices=KeyResultCommentTypeChoices.choices)
+    extra = models.TextField(blank=True, null=True) 
+    parent = models.ForeignKey('self', models.CASCADE, blank=True, null=True)
 
     class Meta:
         db_table = 'key_result_comment'
+        managed = False
 
 
 class KeyResultSupportTeamMembersUser(models.Model):
-    key_result = models.ForeignKey(KeyResult, models.DO_NOTHING, null=True, blank=True) # initial
-    user = models.ForeignKey(User, models.DO_NOTHING, null=True, blank=True) # initial
+    key_result = models.ForeignKey(KeyResult, models.DO_NOTHING, null=True, blank=True)
+    user = models.ForeignKey(User, models.DO_NOTHING, null=True, blank=True)
 
     class Meta:
         db_table = 'key_result_support_team_members_user'
+        managed = False
 
 
 class KeyResultUpdate(BaseModel):
-    key_result = models.ForeignKey(KeyResult, models.DO_NOTHING) # initial
-    author = models.JSONField() # initial
-    old_state = models.JSONField() # initial
-    patches = models.JSONField() # initial
-    new_state = models.JSONField() # initial
+    key_result = models.ForeignKey(KeyResult, models.DO_NOTHING)
+    author = models.JSONField()
+    old_state = models.JSONField()
+    patches = models.JSONField()
+    new_state = models.JSONField()
 
     class Meta:
         db_table = 'key_result_update'
+        managed = False
