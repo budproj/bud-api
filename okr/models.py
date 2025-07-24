@@ -42,7 +42,7 @@ class Objective(BaseModel):
         managed = False
 
 
-class KeyResult(BaseModel):
+class KeyResultORM(BaseModel):
     class KeyResultTypeChoices(models.TextChoices):
         ASCENDING = 'ASCENDING'
         DESCENDING = 'DESCENDING'
@@ -83,7 +83,7 @@ class KeyResult(BaseModel):
 class KeyResultCheckIn(BaseModel):
     value = models.FloatField()
     confidence = models.IntegerField()
-    key_result = models.ForeignKey(KeyResult, models.CASCADE)
+    key_result = models.ForeignKey('okr.KeyResultORM', models.CASCADE)
     user = models.ForeignKey(User, models.CASCADE)
     comment = models.TextField(blank=True, null=True)
     parent = models.OneToOneField('self', models.DO_NOTHING, blank=True, null=True)
@@ -100,7 +100,7 @@ class KeyResultCheckMark(BaseModel):
         UNCHECKED = 'UNCHECKED'
     state = models.TextField(choices=KeyResultCheckMarkStateChoices.choices)
     description = models.TextField()
-    key_result = models.ForeignKey(KeyResult, models.CASCADE)
+    key_result = models.ForeignKey('okr.KeyResultORM', models.CASCADE)
     user = models.ForeignKey(User, models.CASCADE)
     assigned_user = models.ForeignKey(User, models.CASCADE, related_name='assigned_user_set', blank=True, null=True)
 
@@ -120,7 +120,7 @@ class KeyResultComment(BaseModel):
         COMMENT = 'comment'
         
     text = models.TextField(blank=True, null=True)
-    key_result = models.ForeignKey(KeyResult, models.CASCADE)
+    key_result = models.ForeignKey('okr.KeyResultORM', models.CASCADE)
     user = models.ForeignKey(User, models.CASCADE)
     type = models.TextField(choices=KeyResultCommentTypeChoices.choices)
     extra = models.TextField(blank=True, null=True) 
@@ -132,7 +132,7 @@ class KeyResultComment(BaseModel):
 
 
 class KeyResultSupportTeamMembersUser(models.Model):
-    key_result = models.ForeignKey(KeyResult, models.DO_NOTHING, null=True, blank=True)
+    key_result = models.ForeignKey('okr.KeyResultORM', models.DO_NOTHING, null=True, blank=True)
     user = models.ForeignKey(User, models.DO_NOTHING, null=True, blank=True)
 
     class Meta:
@@ -141,7 +141,7 @@ class KeyResultSupportTeamMembersUser(models.Model):
 
 
 class KeyResultUpdate(BaseModel):
-    key_result = models.ForeignKey(KeyResult, models.DO_NOTHING)
+    key_result = models.ForeignKey('okr.KeyResultORM', models.DO_NOTHING)
     author = models.JSONField()
     old_state = models.JSONField()
     patches = models.JSONField()

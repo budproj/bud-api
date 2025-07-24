@@ -4,7 +4,7 @@ from django.utils.timezone import now
 
 from api.models import BaseModel
 from team.models import Team
-from okr.models import Cycle, KeyResult
+from okr.models import Cycle
 from user.models import User
 
 from django.db import connection
@@ -28,7 +28,7 @@ class Task(BaseModel):
         Team, on_delete=models.CASCADE, blank=True, null=True, db_column='team_id'
     )
     key_result = models.ForeignKey(
-        KeyResult,
+        'okr.KeyResultORM',
         on_delete=models.CASCADE,
         blank=True,
         null=True,
