@@ -1,3 +1,6 @@
+from datetime import timedelta
+import re
+
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
@@ -22,17 +25,47 @@ class TaskViewset(viewsets.ViewSet):
         'tasks_user',
     ])
     def list(self, request):
-        last = request.query_params.get('last')
-        since = request.query_params.get('since')
-        upto = request.query_params.get('upto')
+        date_range = None
 
-        date_range = TranslateRelativeDate(
-            timezone, last=last, since=since, upto=upto
-        ).date_range
+        cycle = request.query_params.get('cy')
+        if cycle:
+            cycle = cycle.split('+')
+                 
+            year = int(cycle[0])
+            quarter = int(cycle[1]) if bool(re.search(r'\d', cycle[1])) else None
 
+            date_start = timezone.datetime(year, ((quarter or 1)-1)*3+1, 1)
+            date_end = timezone.datetime(year, (quarter or 4)*3, 1)
+            
+            date_start -= timedelta(days=1)
+            
+            self.queryset = self.queryset.filter(Q(cycle__date_start__range=(date_start, date_end)))
+        
+        show = request.query_params.get('show_done')
+        if show:
+            match show:
+                case '1w':
+                    date_range = TranslateRelativeDate(
+                        timezone, last='0 weeks', since=None, upto=None
+                    ).date_range
+                case '2w':
+                    date_range = TranslateRelativeDate(
+                        timezone, last='2 weeks', since=None, upto=None
+                    ).date_range
+                case '4w':
+                    date_range = TranslateRelativeDate(
+                        timezone, last='0 months', since=None, upto=None
+                    ).date_range
+                case _:
+                    return Response(
+                        {'detail': 'A tarefa já foi deletada.'},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+        
         if date_range:
-            self.queryset = self.queryset.filter(Q(created_at__range=date_range))
-
+            print(date_range)
+            self.queryset = self.queryset.filter(Q(due_date__range=date_range))
+                    
         serializer = TaskReadSerializer(self.queryset.all(), many=True)
         return Response(serializer.data)
 

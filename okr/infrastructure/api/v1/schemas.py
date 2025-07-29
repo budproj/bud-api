@@ -1,5 +1,6 @@
-from datetime import date
+from datetime import datetime
 from decimal import Decimal
+from typing import Dict, List, Optional
 from ninja import Schema
 
 class KeyResultOut(Schema):
@@ -9,14 +10,14 @@ class KeyResultOut(Schema):
     owner: str
     format: str
     objective: str
-    comment_count: str
+    comment_count: Dict[str, int]
     goal: Decimal
     initial_value: Decimal
-    id: str
-    team: str
-    description: str
-    last_updated_by: str
-    support_team: str
-    created_at: date
-    updated_at: date
-    deleted_at: date
+    id: Optional[str] = None
+    team: Optional[str] = None
+    description: Optional[str] = None
+    last_updated_by: Optional[Dict[str, str]] = None
+    support_team: List[str]
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+    deleted_at: Optional[datetime] = None

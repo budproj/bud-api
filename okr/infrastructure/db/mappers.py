@@ -1,5 +1,6 @@
-from okr.domain.entities import KeyResult
-from okr.models import KeyResultORM, Objective
+from typing import Tuple
+from okr.domain.entities import CycleDate, KeyResult, Cycle
+from okr.models import KeyResultORM, Objective, CycleORM
 
 from user.models import User
 from team.models import Team
@@ -20,7 +21,7 @@ def map_key_result_orm_to_entity(kr_orm: KeyResultORM) -> KeyResult:
         team=str(kr_orm.team.id) if kr_orm.team else None,
         description=kr_orm.description,
         last_updated_by=kr_orm.last_updated_by,
-        support_team=[i.id for i in kr_orm.support_team.all()],
+        support_team=[str(i.id) for i in kr_orm.support_team.all()],
         created_at=kr_orm.created_at,
         updated_at=kr_orm.updated_at,
         deleted_at=kr_orm.deleted_at,
@@ -73,3 +74,26 @@ def map_user_entity_to_orm(kr_entity: KeyResult) -> KeyResultORM:
                 raise ValueError("Invalid User") from None
     
     return kr_orm
+
+def map_cycle_orm_to_entity(cycle_orm: CycleORM) -> Cycle:
+    """Converte um UserORM (modelo Django) para uma entidade User de domínio."""
+    return Cycle(
+        id=str(cycle_orm.id),
+        date_start=cycle_orm.date_start,
+        date_end=cycle_orm.date_end,
+        team=str(cycle_orm.team.id),
+        period=cycle_orm.period,
+        cadence=cycle_orm.cadence,
+        parent=map_cycle_orm_to_entity(cycle_orm.parent) if cycle_orm.parent else None,
+        active=cycle_orm.active,
+        created_at=cycle_orm.created_at,
+        updated_at=cycle_orm.updated_at,
+        deleted_at=cycle_orm.deleted_at,
+    )
+    
+def map_cycle_date_orm_to_entity(cycle_date: Tuple[str, str]) -> CycleDate:
+    """Converte uma tupla de dados em uma entidade CycleDate."""
+    return CycleDate(
+        year = cycle_date[0],
+        quarter = cycle_date[1],
+    )

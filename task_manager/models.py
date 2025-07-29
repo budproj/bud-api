@@ -4,7 +4,6 @@ from django.utils.timezone import now
 
 from api.models import BaseModel
 from team.models import Team
-from okr.models import Cycle
 from user.models import User
 
 from django.db import connection
@@ -36,7 +35,7 @@ class Task(BaseModel):
         related_name='task_key_result',
     )
     cycle = models.ForeignKey(
-        Cycle, null=True, blank=True, on_delete=models.CASCADE, db_column='cycle_id'
+        'okr.CycleORM', null=True, blank=True, on_delete=models.CASCADE, db_column='cycle_id'
     )
     owner = models.ForeignKey(User, null=False, blank=False, on_delete=models.CASCADE)
     status = models.TextField(
@@ -105,6 +104,7 @@ class Task(BaseModel):
 
     class Meta:
         db_table = 'task'
+        managed = False
 
 
 class TaskHistory(BaseModel):
@@ -120,6 +120,7 @@ class TaskHistory(BaseModel):
     class Meta:
         db_table = 'task_history'
         verbose_name_plural = 'Task Histories'
+        managed = False
 
 
 class TaskComments(BaseModel):
@@ -131,6 +132,7 @@ class TaskComments(BaseModel):
     class Meta:
         db_table = 'task_comment'
         verbose_name_plural = 'Task Comments'
+        managed = False
 
     def soft_delete(self):
         self.deleted_at = now()

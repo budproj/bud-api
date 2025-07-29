@@ -21,7 +21,7 @@ class Team(BaseModel):
     
     class Meta:
         db_table = 'team'
-
+        managed = False
 
 class TeamUsersUser(models.Model):
     team = models.ForeignKey(Team, models.CASCADE) # initial
@@ -29,3 +29,4 @@ class TeamUsersUser(models.Model):
 
     class Meta:
         db_table = 'team_users_user'
+        managed = False

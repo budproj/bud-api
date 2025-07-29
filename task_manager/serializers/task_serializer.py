@@ -1,8 +1,39 @@
+from decimal import Decimal
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
-from okr.serializers.key_result_serializer import KeyResultSerializer
+from okr.models import KeyResultORM, KeyResultCheckIn
 from task_manager.models import Task
 from user.models import User
 from .task_history_serializer import TaskHistorySerializer
+
+class KeyResultSerializer(ModelSerializer):
+    last_checkin = SerializerMethodField()
+    
+    class Meta:
+        model = KeyResultORM
+        fields = '__all__'
+        read_only = ['id', 'created_at', 'updated_at']
+        
+    def get_last_checkin(self, obj):
+        last_checkin = KeyResultCheckIn.objects.filter(key_result=obj).order_by('created_at').last()
+        if last_checkin:
+            return self.obj_check_in(obj, last_checkin)
+        return None
+        
+    
+    def obj_check_in(
+            self,              
+            key_result: KeyResultORM, 
+            checkin: KeyResultCheckIn
+        ):
+        progress = Decimal((checkin.value * 100)) / key_result.goal 
+
+        return {
+            'progress': progress,
+            'value': checkin.value,
+            'confidence': checkin.confidence,
+            'comment': checkin.comment,
+            'user': checkin.user_id, # type: ignore - Campo gerado automaticamente no django
+        }
 
 class TaskSerializer(ModelSerializer):    
     class Meta:

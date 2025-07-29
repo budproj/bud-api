@@ -5,7 +5,7 @@ from team.models import Team
 from user.models import User
 
 
-class Cycle(BaseModel):
+class CycleORM(BaseModel):
     class CycleCadenceChoices(models.TextChoices):
         YEARLY = 'YEARLY'
         QUARTERLY = 'QUARTERLY'
@@ -31,7 +31,7 @@ class Objective(BaseModel):
         DELETED = 'DELETED'
     
     title = models.CharField()
-    cycle = models.ForeignKey(Cycle, models.CASCADE)
+    cycle = models.ForeignKey('okr.CycleORM', models.CASCADE)
     owner = models.ForeignKey(User, models.CASCADE)
     team = models.ForeignKey(Team, models.CASCADE, blank=True, null=True)
     description = models.CharField(blank=True, null=True)
