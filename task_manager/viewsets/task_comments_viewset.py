@@ -2,11 +2,11 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 
 from task_manager.serializers.task_comments_serializer import TaskCommentsSerializer
-from task_manager.models import TaskComments
+from task_manager.models import TaskCommentsORM
 
 class TaskCommentsViewset(viewsets.ViewSet):
     serializer_class = TaskCommentsSerializer
-    queryset = TaskComments.objects.all()
+    queryset = TaskCommentsORM.objects.all()
 
     def list(self, request, id):
         if id is None or id == '':

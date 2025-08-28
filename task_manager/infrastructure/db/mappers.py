@@ -1,0 +1,94 @@
+from task_manager.domain.entities import TaskBoard, TaskComments, Task, TaskHistory
+
+from task_manager.models import TaskCommentsORM, TaskORM, TaskHistoryORM
+from user.models import UserORM
+
+from user.infrastructure.db.mappers import map_user_orm_to_entity
+from okr.infrastructure.db.mappers import map_key_result_orm_to_entity
+
+def map_task_orm_to_entity(task_orm: TaskORM) -> Task:
+    return Task(
+        team=str(task_orm.team.id) if task_orm.team else None,
+        key_result=str(task_orm.key_result.id) if task_orm.key_result else None,
+        cycle=str(task_orm.cycle.id) if task_orm.cycle else None,
+        owner=str(task_orm.owner.id) if task_orm.owner else None,
+        status=task_orm.status,
+        title=task_orm.title,
+        description=task_orm.description,
+        priority=task_orm.priority,
+        initial_date=task_orm.initial_date,
+        due_date=task_orm.due_date,
+        support_team=[i for i in task_orm.support_team] if task_orm.support_team else None,
+        attachments=[i for i in task_orm.attachments] if task_orm.attachments else None,
+        tags=[i for i in task_orm.tags] if task_orm.tags else None,
+        orderindex=task_orm.orderindex,
+        id=str(task_orm.id),
+        created_at=task_orm.created_at,
+        updated_at=task_orm.updated_at,
+        deleted_at=task_orm.deleted_at,
+    )
+def map_task_history_orm_to_entity(task_history_orm: TaskHistoryORM) -> TaskHistory:
+    return TaskHistory(
+        task=str(task_history_orm.task.id),
+        field=task_history_orm.field,
+        old_state=task_history_orm.old_state,
+        new_state=task_history_orm.new_state,
+        author=str(task_history_orm.author.id),
+    )
+
+def map_task_orm_to_task_board_entity(task_orm: TaskORM) -> TaskBoard:
+    return TaskBoard(
+        team=str(task_orm.team.id) if task_orm.team else None,
+        key_result=map_key_result_orm_to_entity(task_orm.key_result) if task_orm.key_result else None,
+        cycle=str(task_orm.cycle.id) if task_orm.cycle else None,
+        owner=str(task_orm.owner.id) if task_orm.owner else None,
+        status=task_orm.status,
+        title=task_orm.title,
+        description=task_orm.description,
+        priority=task_orm.priority,
+        initial_date=task_orm.initial_date,
+        due_date=task_orm.due_date,
+        support_team=[i for i in task_orm.support_team] if task_orm.support_team else None,
+        attachments=[i for i in task_orm.attachments] if task_orm.attachments else None,
+        tags=[i for i in task_orm.tags] if task_orm.tags else None,
+        orderindex=task_orm.orderindex,
+        id=str(task_orm.id),
+        created_at=task_orm.created_at,
+        updated_at=task_orm.updated_at,
+        deleted_at=task_orm.deleted_at,
+        history=[map_task_history_orm_to_entity(i) for i in TaskHistoryORM.objects.filter(task_id=str(task_orm.id))],
+        users_related=[map_user_orm_to_entity(UserORM.objects.get(i)) for i in task_orm.support_team] if task_orm.support_team else [],
+        owner_full_name=f'{task_orm.owner.first_name} {task_orm.owner.last_name}',
+    )
+    
+def map_task_comments_entity_to_orm(tk_entity: TaskComments) -> TaskCommentsORM:
+    """Converte uma entidade TaskComments de domínio para um TaskCommentsORM (modelo Django)."""
+    if tk_entity.id:
+        try:
+            tk_orm = TaskCommentsORM.objects.get(id=tk_entity.id)
+        except TaskCommentsORM.DoesNotExist:
+            raise ValueError(f"TaskCommentsORM with ID {tk_entity.id} not found for update.") from None
+    else:
+        tk_orm = TaskCommentsORM()
+
+    tk_orm.text=tk_entity.text
+    
+    if tk_entity.parent:
+        try: 
+            tk_orm.parent = TaskCommentsORM.objects.get(id=tk_entity.parent)
+        except TaskCommentsORM.DoesNotExist:
+            raise ValueError("Invalid Parent") from None
+    
+    if tk_entity.user:
+        try:
+            tk_orm.user = UserORM.objects.get(id=tk_entity.user)
+        except UserORM.DoesNotExist:
+            raise ValueError("Invalid User") from None
+        
+    if tk_entity.task:
+        try:
+            tk_orm.task = TaskORM.objects.get(id=tk_entity.task)
+        except TaskORM.DoesNotExist:
+            raise ValueError("Invalid Task") from None
+    
+    return tk_orm

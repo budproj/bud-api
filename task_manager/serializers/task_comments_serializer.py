@@ -1,16 +1,16 @@
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
 
-from task_manager.models import Task, TaskComments
+from task_manager.models import TaskORM, TaskCommentsORM
 from task_manager.serializers.task_serializer import TaskSerializer
-from user.models import User
+from user.models import UserORM
 
 class TaskCommentsSerializer(ModelSerializer):
     task = TaskSerializer(read_only=True)
     user = SerializerMethodField(read_only=True)
     
     class Meta:
-        model = TaskComments
+        model = TaskCommentsORM
         fields = '__all__'
         
     def get_user(self, obj):
@@ -34,10 +34,10 @@ class TaskCommentsSerializer(ModelSerializer):
         text = validated_data.get('text')
 
         try:
-            task = Task.objects.get(pk=task_id)
-            user = User.objects.get(pk=user_id)
-        except (Task.DoesNotExist, User.DoesNotExist):
+            task = TaskORM.objects.get(pk=task_id)
+            user = UserORM.objects.get(pk=user_id)
+        except (TaskORM.DoesNotExist, UserORM.DoesNotExist):
             raise serializers.ValidationError("ID de tarefa ou usuário inválido.")  # noqa: B904
 
-        task_comment = TaskComments.objects.create(text=text, task=task, user=user)
+        task_comment = TaskCommentsORM.objects.create(text=text, task=task, user=user)
         return task_comment

@@ -3,15 +3,15 @@ from ninja import Router
 
 from okr.application.interfaces import IKeyResultApplicationService, ICycleApplicationService
 from okr.application.services import KeyResultApplicationService, CycleApplicationService
-from okr.domain.entities import Cycle, CycleDate
-from okr.infrastructure.api.v1.schemas import KeyResultOut
 
-okr_router = Router(tags=["Users"])
+from okr.domain.entities import Cycle, CycleDate, KeyResult
+
+okr_router = Router(tags=["okr"])
 
 kr_service: IKeyResultApplicationService = KeyResultApplicationService()
 cycle_service: ICycleApplicationService = CycleApplicationService()
 
-@okr_router.get("/key_result/{team_id}", response={200: List[KeyResultOut], 404: dict})
+@okr_router.get("/key_result/{team_id}", response={200: List[KeyResult], 404: dict})
 def get_kr_by_team(request, team_id: str):
     data = kr_service.get_key_results_by_team_id(team_id)
     return data

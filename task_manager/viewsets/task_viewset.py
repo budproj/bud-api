@@ -9,14 +9,14 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 
 from task_manager.serializers.task_serializer import TaskSerializer, TaskReadSerializer
-from task_manager.models import Task
+from task_manager.models import TaskORM
 
 from api.utils.translate_datetime import TranslateRelativeDate
 from api.utils.decorators.filter_queryset import query_filter_allowed
 
 class TaskViewset(viewsets.ViewSet):
     serializer_class = TaskSerializer
-    queryset = Task.objects.all()
+    queryset = TaskORM.objects.all()
 
     @query_filter_allowed([
         'team_id__id',
@@ -63,7 +63,6 @@ class TaskViewset(viewsets.ViewSet):
                     )
         
         if date_range:
-            print(date_range)
             self.queryset = self.queryset.filter(Q(due_date__range=date_range))
                     
         serializer = TaskReadSerializer(self.queryset.all(), many=True)

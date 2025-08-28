@@ -1,8 +1,8 @@
 from decimal import Decimal
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
-from okr.models import KeyResultORM, KeyResultCheckIn
-from task_manager.models import Task
-from user.models import User
+from okr.models import KeyResultORM, KeyResultCheckInORM
+from task_manager.models import TaskORM
+from user.models import UserORM
 from .task_history_serializer import TaskHistorySerializer
 
 class KeyResultSerializer(ModelSerializer):
@@ -14,7 +14,7 @@ class KeyResultSerializer(ModelSerializer):
         read_only = ['id', 'created_at', 'updated_at']
         
     def get_last_checkin(self, obj):
-        last_checkin = KeyResultCheckIn.objects.filter(key_result=obj).order_by('created_at').last()
+        last_checkin = KeyResultCheckInORM.objects.filter(key_result=obj).order_by('created_at').last()
         if last_checkin:
             return self.obj_check_in(obj, last_checkin)
         return None
@@ -23,7 +23,7 @@ class KeyResultSerializer(ModelSerializer):
     def obj_check_in(
             self,              
             key_result: KeyResultORM, 
-            checkin: KeyResultCheckIn
+            checkin: KeyResultCheckInORM
         ):
         progress = Decimal((checkin.value * 100)) / key_result.goal 
 
@@ -37,7 +37,7 @@ class KeyResultSerializer(ModelSerializer):
 
 class TaskSerializer(ModelSerializer):    
     class Meta:
-        model = Task
+        model = TaskORM
         fields = '__all__'
         read_only = ['created_at', 'update_at']
         
@@ -73,7 +73,7 @@ class TaskReadSerializer(ModelSerializer):
     key_result = KeyResultSerializer(read_only=True)
     
     class Meta:
-        model = Task
+        model = TaskORM
         fields = '__all__'
         read_only = '__all__'
         
@@ -84,7 +84,7 @@ class TaskReadSerializer(ModelSerializer):
             data.append(self.obj_user(obj.owner))
     
         if obj.support_team:
-            users = User.objects.filter(id__in=obj.support_team)
+            users = UserORM.objects.filter(id__in=obj.support_team)
             for user in users:
                 data.append(self.obj_user(user))
     
@@ -94,7 +94,7 @@ class TaskReadSerializer(ModelSerializer):
         data = []
     
         if obj.support_team:
-            users = User.objects.filter(id__in=obj.support_team)
+            users = UserORM.objects.filter(id__in=obj.support_team)
             for user in users:
                 data.append(self.obj_user(user))
     

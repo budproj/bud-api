@@ -1,12 +1,12 @@
 from typing import Tuple
-from okr.domain.entities import CycleDate, KeyResult, Cycle
-from okr.models import KeyResultORM, Objective, CycleORM
+from okr.domain.entities import CycleDate, KeyResult, Cycle, Objective
+from okr.models import KeyResultORM, ObjectiveORM, CycleORM
 
-from user.models import User
-from team.models import Team
+from user.models import UserORM
+from team.models import TeamORM
 
 def map_key_result_orm_to_entity(kr_orm: KeyResultORM) -> KeyResult:
-    """Converte um UserORM (modelo Django) para uma entidade User de domínio."""
+    """Converte um KeyResultORM (modelo Django) para uma entidade KeyResult."""
     return KeyResult(
         id=str(kr_orm.id),
         type=kr_orm.type,
@@ -18,13 +18,27 @@ def map_key_result_orm_to_entity(kr_orm: KeyResultORM) -> KeyResult:
         comment_count=kr_orm.comment_count,
         goal=kr_orm.goal,
         initial_value=kr_orm.initial_value,
-        team=str(kr_orm.team.id) if kr_orm.team else None,
+        team=str(kr_orm.team) if kr_orm.team else None,
         description=kr_orm.description,
         last_updated_by=kr_orm.last_updated_by,
         support_team=[str(i.id) for i in kr_orm.support_team.all()],
         created_at=kr_orm.created_at,
         updated_at=kr_orm.updated_at,
         deleted_at=kr_orm.deleted_at,
+    )
+    
+def map_objective_orm_to_entity(obj_orm: ObjectiveORM) -> Objective:
+    return Objective(
+        title=obj_orm.title,  
+        cycle=str(obj_orm.cycle.id),
+        owner=str(obj_orm.owner.id),
+        mode=obj_orm.mode,
+        team=str(obj_orm.team.id) if obj_orm.team else None,
+        description=obj_orm.description,
+        id=str(obj_orm.id),
+        created_at=obj_orm.created_at,
+        updated_at=obj_orm.updated_at,
+        deleted_at=obj_orm.deleted_at
     )
 
 def map_user_entity_to_orm(kr_entity: KeyResult) -> KeyResultORM:
@@ -49,28 +63,28 @@ def map_user_entity_to_orm(kr_entity: KeyResult) -> KeyResultORM:
     
     if kr_entity.owner:
         try: 
-            kr_orm.owner=User.objects.get(id=kr_entity.owner)
-        except User.DoesNotExist:
+            kr_orm.owner=UserORM.objects.get(id=kr_entity.owner)
+        except UserORM.DoesNotExist:
             raise ValueError("Invalid User") from None
     
     if kr_entity.objective:
         try:
-            kr_orm.objective=Objective.objects.get(id=kr_entity.objective)
-        except Objective.DoesNotExist:
+            kr_orm.objective=ObjectiveORM.objects.get(id=kr_entity.objective)
+        except ObjectiveORM.DoesNotExist:
             raise ValueError("Invalid Objective") from None
         
     if kr_entity.team:
         try:
-            kr_orm.team=Team.objects.get(id=kr_entity.team)
-        except Team.DoesNotExist:
+            kr_orm.team=TeamORM.objects.get(id=kr_entity.team)
+        except TeamORM.DoesNotExist:
             raise ValueError("Invalid Team") from None
     
     if kr_entity.support_team:
         for i in kr_entity.support_team:
             try: 
-                user=User.objects.get(id=i)
+                user=UserORM.objects.get(id=i)
                 kr_orm.support_team.add(user)
-            except User.DoesNotExist:
+            except UserORM.DoesNotExist:
                 raise ValueError("Invalid User") from None
     
     return kr_orm
@@ -84,7 +98,7 @@ def map_cycle_orm_to_entity(cycle_orm: CycleORM) -> Cycle:
         team=str(cycle_orm.team.id),
         period=cycle_orm.period,
         cadence=cycle_orm.cadence,
-        parent=map_cycle_orm_to_entity(cycle_orm.parent) if cycle_orm.parent else None,
+        parent=str(cycle_orm.parent.id) if cycle_orm.parent else None,
         active=cycle_orm.active,
         created_at=cycle_orm.created_at,
         updated_at=cycle_orm.updated_at,

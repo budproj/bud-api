@@ -1,11 +1,11 @@
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
-from user.models import User
+from user.models import UserORM
 
 class UserSerializer(ModelSerializer):
     full_name = SerializerMethodField()
 
     class Meta:
-        model = User
+        model = UserORM
         fields = '__all__'
         
     def get_full_name(self, obj):

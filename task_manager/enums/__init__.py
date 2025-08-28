@@ -1,2 +1,0 @@
-from .task_priority_choices import TaskPriorityChoices
-from .task_status_choices import TaskStatusChoices

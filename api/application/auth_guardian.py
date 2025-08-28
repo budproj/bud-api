@@ -1,6 +1,6 @@
 import jwt
 
-from user.models import User
+from user.models import UserORM
 from ninja.errors import HttpError
 from ninja.security import HttpBearer
 
@@ -31,9 +31,9 @@ class AuthPermission(HttpBearer):
         )
         
         try:
-            user = User.objects.get(authz_sub=authz_user['sub'])
-        except User.DoesNotExist as err:
-            raise HttpError(401, "User not allowed to access site") from err
+            user = UserORM.objects.get(authz_sub=authz_user['sub'])
+        except UserORM.DoesNotExist as err:
+            raise HttpError(401, "unauthorized") from err
                 
         request.auth = user
         request.permission = authz_user['permissions']

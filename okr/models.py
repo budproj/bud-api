@@ -1,8 +1,8 @@
 from django.db import models
 
 from api.models import BaseModel
-from team.models import Team
-from user.models import User
+from team.models import TeamORM
+from user.models import UserORM
 
 
 class CycleORM(BaseModel):
@@ -12,7 +12,7 @@ class CycleORM(BaseModel):
     
     date_start = models.DateTimeField()
     date_end = models.DateTimeField()
-    team = models.ForeignKey(Team, models.CASCADE)
+    team = models.ForeignKey(TeamORM, models.CASCADE)
     period = models.CharField()
     cadence = models.TextField(choices=CycleCadenceChoices.choices)
     parent = models.ForeignKey('self', models.DO_NOTHING, blank=True, null=True)
@@ -23,7 +23,7 @@ class CycleORM(BaseModel):
         managed = False
 
 
-class Objective(BaseModel):
+class ObjectiveORM(BaseModel):
     class ObjectiveModeChoices(models.TextChoices):
         COMPLETED = 'COMPLETED'
         PUBLISHED = 'PUBLISHED'
@@ -32,8 +32,8 @@ class Objective(BaseModel):
     
     title = models.CharField()
     cycle = models.ForeignKey('okr.CycleORM', models.CASCADE)
-    owner = models.ForeignKey(User, models.CASCADE)
-    team = models.ForeignKey(Team, models.CASCADE, blank=True, null=True)
+    owner = models.ForeignKey(UserORM, models.CASCADE)
+    team = models.ForeignKey(TeamORM, models.CASCADE, blank=True, null=True)
     description = models.CharField(blank=True, null=True)
     mode = models.TextField(choices=ObjectiveModeChoices.choices)
 
@@ -66,25 +66,25 @@ class KeyResultORM(BaseModel):
     initial_value = models.DecimalField(max_digits=14, decimal_places=2)
     description = models.TextField(blank=True, null=True)
     format = models.TextField(choices=KeyResultFormatChoices.choices)
-    objective = models.ForeignKey(Objective, models.CASCADE)
-    team = models.ForeignKey(Team, models.CASCADE, blank=True, null=True)
-    owner = models.ForeignKey(User, models.CASCADE)
+    objective = models.ForeignKey(ObjectiveORM, models.CASCADE)
+    team = models.ForeignKey(TeamORM, models.CASCADE, blank=True, null=True)
+    owner = models.ForeignKey(UserORM, models.CASCADE)
     type = models.TextField(choices=KeyResultTypeChoices.choices)
     mode = models.TextField(choices=KeyResultModeChoices.choices)
     comment_count = models.JSONField()
     last_updated_by = models.JSONField(blank=True, null=True)
-    support_team = models.ManyToManyField(User, through='KeyResultSupportTeamMembersUser', related_name='suport_team_key_result')
+    support_team = models.ManyToManyField(UserORM, through='KeyResultSupportTeamMembersUserORM', related_name='suport_team_key_result')
 
     class Meta:
         db_table = 'key_result'
         managed = False
 
 
-class KeyResultCheckIn(BaseModel):
+class KeyResultCheckInORM(BaseModel):
     value = models.FloatField()
     confidence = models.IntegerField()
     key_result = models.ForeignKey('okr.KeyResultORM', models.CASCADE)
-    user = models.ForeignKey(User, models.CASCADE)
+    user = models.ForeignKey(UserORM, models.CASCADE)
     comment = models.TextField(blank=True, null=True)
     parent = models.OneToOneField('self', models.DO_NOTHING, blank=True, null=True)
     previous_state = models.JSONField(blank=True, null=True)
@@ -94,22 +94,22 @@ class KeyResultCheckIn(BaseModel):
         managed = False
 
 
-class KeyResultCheckMark(BaseModel):
+class KeyResultCheckMarkORM(BaseModel):
     class KeyResultCheckMarkStateChoices(models.TextChoices):
         CHECKED = 'CHECKED'
         UNCHECKED = 'UNCHECKED'
     state = models.TextField(choices=KeyResultCheckMarkStateChoices.choices)
     description = models.TextField()
     key_result = models.ForeignKey('okr.KeyResultORM', models.CASCADE)
-    user = models.ForeignKey(User, models.CASCADE)
-    assigned_user = models.ForeignKey(User, models.CASCADE, related_name='assigned_user_set', blank=True, null=True)
+    user = models.ForeignKey(UserORM, models.CASCADE)
+    assigned_user = models.ForeignKey(UserORM, models.CASCADE, related_name='assigned_user_set', blank=True, null=True)
 
     class Meta:
         db_table = 'key_result_check_mark'
         managed = False
 
 
-class KeyResultComment(BaseModel):
+class KeyResultCommentORM(BaseModel):
     class KeyResultCommentTypeChoices(models.TextChoices):
         SUGGESTION = 'suggestion'
         PRAISAL = 'praisal'
@@ -121,7 +121,7 @@ class KeyResultComment(BaseModel):
         
     text = models.TextField(blank=True, null=True)
     key_result = models.ForeignKey('okr.KeyResultORM', models.CASCADE)
-    user = models.ForeignKey(User, models.CASCADE)
+    user = models.ForeignKey(UserORM, models.CASCADE)
     type = models.TextField(choices=KeyResultCommentTypeChoices.choices)
     extra = models.TextField(blank=True, null=True) 
     parent = models.ForeignKey('self', models.CASCADE, blank=True, null=True)
@@ -131,16 +131,16 @@ class KeyResultComment(BaseModel):
         managed = False
 
 
-class KeyResultSupportTeamMembersUser(models.Model):
+class KeyResultSupportTeamMembersUserORM(models.Model):
     key_result = models.ForeignKey('okr.KeyResultORM', models.DO_NOTHING, null=True, blank=True)
-    user = models.ForeignKey(User, models.DO_NOTHING, null=True, blank=True)
+    user = models.ForeignKey(UserORM, models.DO_NOTHING, null=True, blank=True)
 
     class Meta:
         db_table = 'key_result_support_team_members_user'
         managed = False
 
 
-class KeyResultUpdate(BaseModel):
+class KeyResultUpdateORM(BaseModel):
     key_result = models.ForeignKey('okr.KeyResultORM', models.DO_NOTHING)
     author = models.JSONField()
     old_state = models.JSONField()
