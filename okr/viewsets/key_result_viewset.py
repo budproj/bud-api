@@ -31,13 +31,12 @@ class KeyResultViewset(ModelViewSet):
     
     def list_by_user_with_tasks(self, request, pk):
         queryset = KeyResult.objects.filter(
-            mode=KeyResultModeChoices.PUBLISHED,
-            deleted_at__isnull=True,
-            objective__cycle__active=True,
-        )
-        queryset = queryset.filter(
+            Q(mode=KeyResultModeChoices.PUBLISHED),
+            Q(deleted_at__isnull=True),
+            Q(objective__cycle__active=True),
+        ).filter(
             Q(owner__id=pk) | 
-            Q(support_team__in=[pk])
-        )
+            Q(support_team__id=pk)
+        ).distinct()
         serializer = KeyResultTaskSerializer(queryset, many=True, context={'user_selected': pk})
         return Response(serializer.data, status=status.HTTP_200_OK)
