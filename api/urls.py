@@ -38,7 +38,10 @@ swagger_paths = [
 
 urlpatterns = [
     path('task-management/', include('task_manager.urls')),
-    path('', include('okr.urls')),
+    path('', include('cycle.urls')),
+    path('', include('key_result.urls')),
+    path('', include('objective.urls')),
+    path('', include('team.urls')),
 ]
 
 

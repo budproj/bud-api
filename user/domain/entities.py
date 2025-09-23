@@ -2,6 +2,8 @@ from datetime import datetime
 from pydantic import BaseModel
 from typing import Optional, Dict
 
+from api.application.types import Effect, Resource, Command, Scope
+
 
 class User(BaseModel):
     id: Optional[str]
@@ -26,3 +28,25 @@ class UserSetting(BaseModel):
     value: str
     user: User
     preferences: Dict[str, str]
+
+
+class AuthzData(BaseModel):
+    iss: str
+    sub: str
+    azp: str
+    scope: str
+    aud: list[str]
+    iat: int
+    exp: int
+    permissions: list[str]
+
+
+
+class UserWithContext(User):
+    token: AuthzData
+    resourcePolicy: Dict[Resource, Dict[Command, Dict[Scope, Effect]]]
+
+class AccessControlScopes(BaseModel):
+    is_owner: bool
+    is_team_leader: bool
+    is_company_member: bool

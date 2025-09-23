@@ -10,7 +10,7 @@ class Team(BaseModel):
     gender: str
     description: Optional[str]
     parent: Optional[str]
-    owner: Optional[User]
+    owner: User
     users: List[str]
     id: Optional[str]
     created_at: Optional[datetime]

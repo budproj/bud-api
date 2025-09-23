@@ -2,7 +2,7 @@ from datetime import datetime
 from pydantic import BaseModel
 from typing import List, Optional
 
-from okr.domain.entities import KeyResult
+from key_result.domain.entities import KeyResult
 from user.domain.entities import User
 
 

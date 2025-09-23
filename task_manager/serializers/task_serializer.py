@@ -1,6 +1,6 @@
 from decimal import Decimal
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
-from okr.models import KeyResultORM, KeyResultCheckInORM
+from key_result.models import KeyResultORM, KeyResultCheckInORM
 from task_manager.models import TaskORM
 from user.models import UserORM
 from .task_history_serializer import TaskHistorySerializer

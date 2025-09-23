@@ -4,7 +4,7 @@ from task_manager.models import TaskCommentsORM, TaskORM, TaskHistoryORM
 from user.models import UserORM
 
 from user.infrastructure.db.mappers import map_user_orm_to_entity
-from okr.infrastructure.db.mappers import map_key_result_orm_to_entity
+from key_result.infrastructure.db.mappers import map_key_result_orm_to_entity
 
 def map_task_orm_to_entity(task_orm: TaskORM) -> Task:
     return Task(
@@ -27,6 +27,7 @@ def map_task_orm_to_entity(task_orm: TaskORM) -> Task:
         updated_at=task_orm.updated_at,
         deleted_at=task_orm.deleted_at,
     )
+
 def map_task_history_orm_to_entity(task_history_orm: TaskHistoryORM) -> TaskHistory:
     return TaskHistory(
         task=str(task_history_orm.task.id),

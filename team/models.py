@@ -28,3 +28,16 @@ class TeamUsersUserORM(models.Model):
     class Meta:
         db_table = 'team_users_user'
         managed = False
+
+class TeamCompany(models.Model):
+    """
+    Materialized view that unify Teams and Companies
+    """
+    id = models.IntegerField(primary_key=True)
+    company = models.ForeignKey('TeamORM', on_delete=models.CASCADE, related_name='team_company_company_id')
+    team = models.ForeignKey('TeamORM', on_delete=models.CASCADE, related_name='team_company_team_id')
+    depth = models.IntegerField()
+    
+    class Meta:
+        db_table = 'team_company'
+        managed = False

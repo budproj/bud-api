@@ -37,7 +37,7 @@ class TaskORM(BaseModel):
         TeamORM, on_delete=models.CASCADE, blank=True, null=True, db_column='team_id'
     )
     key_result = models.ForeignKey(
-        'okr.KeyResultORM',
+        'key_result.KeyResultORM',
         on_delete=models.CASCADE,
         blank=True,
         null=True,
@@ -45,7 +45,7 @@ class TaskORM(BaseModel):
         related_name='task_key_result',
     )
     cycle = models.ForeignKey(
-        'okr.CycleORM', null=True, blank=True, on_delete=models.CASCADE, db_column='cycle_id'
+        'cycle.CycleORM', null=True, blank=True, on_delete=models.CASCADE, db_column='cycle_id'
     )
     owner = models.ForeignKey(UserORM, null=False, blank=False, on_delete=models.CASCADE)
     status = models.TextField(
