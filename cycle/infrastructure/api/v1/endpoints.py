@@ -17,7 +17,9 @@ def get_cycle_by_team(request, team_id: str):
         return status_code, data
     return status_code, error
   
-@cycle_router.get("/date/{team_id}", response={200: List[CycleDate], 404: dict})
+@cycle_router.get("/team/{team_id}/all", response={200: List[Cycle], 404: dict})
 def get_cycle_dates_by_team(request, team_id: str):
-    data = cycle_service.get_cycle_date_by_team_id(team_id)
-    return 200, data
+    data, status_code, error = cycle_service.get_all_cycles_by_team_id(team_id)
+    if not error:
+        return status_code, data
+    return status_code, error

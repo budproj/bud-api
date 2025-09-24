@@ -11,13 +11,15 @@ from api.utils.translate_datetime import TranslateRelativeDate
 
 
 class TasksFilterSchema(FilterSchema):
-    team_id: str = Field(None, q='team_id__id')
-    key_result_id: Optional[str] = Field(None, q='key_result_id__id')
+    team_id: Optional[str] = Field(None, q='team__id')
+    key_result_id: Optional[str] = Field(None, q='key_result__id')
     deleted_at: Optional[bool] = Field(None, q='deleted_at__isnull')
-    show_done: Optional[bool]
-    cy: Optional[str]
+    show_done: Optional[bool] = Field(None, q='show_done')
+    cy: Optional[str] = Field(None, q='cy')
     
     def filter_cy(self, value: str):
+        if value is None:
+            return None
         cycle = value.split('+')
                  
         year = int(cycle[0])
@@ -30,6 +32,8 @@ class TasksFilterSchema(FilterSchema):
         return Q(cycle__date_start__range=(date_start, date_end))
     
     def filter_show_done(self, value: str):
+        if value is None:
+            return None
         date_range = None
         match value:
             case '1w':

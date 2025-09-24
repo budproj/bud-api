@@ -10,7 +10,7 @@ class ICycleApplicationService(ABC):
         pass
     
     @abstractmethod
-    def get_cycle_date_by_team_id(self, team_id) -> Optional[List[CycleDate]]:
+    def get_all_cycles_by_team_id(self, team_id) -> Tuple[Optional[List[Cycle]], Optional[int], Optional[Dict[str, str]]]:
         pass
 
 
@@ -20,5 +20,5 @@ class ICycleRepository(ABC):
         pass
     
     @abstractmethod
-    def find_cycle_dates_by_team_id(self, team_id) -> Optional[List[CycleDate]]:
+    def find_all_cycles_by_team_id(self, team_id) -> Tuple[Optional[List[Cycle]], Optional[int], Optional[Dict[str, str]]]:
         pass

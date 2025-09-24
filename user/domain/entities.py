@@ -7,20 +7,20 @@ from api.application.types import Effect, Resource, Command, Scope
 
 class User(BaseModel):
     id: Optional[str]
-    authz_sub: str
+    authzSub: str
     role: Optional[str]
     picture: Optional[str]
     gender: Optional[str]
-    first_name: str
-    last_name: Optional[str]
+    firstName: str
+    lastName: Optional[str]
     nickname: Optional[str]
     linked_in_profile_address: Optional[str]
     about: Optional[str]
     email: str
     status: Optional[str]
-    created_at: Optional[datetime]
-    updated_at: Optional[datetime]
-    deleted_at: Optional[datetime]
+    createdAt: Optional[datetime]
+    updatedAt: Optional[datetime]
+    deletedAt: Optional[datetime]
 
 
 class UserSetting(BaseModel):
