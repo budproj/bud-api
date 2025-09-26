@@ -6,7 +6,7 @@ from key_result.domain.entities import KeyResult
 
 class IKeyResultApplicationService(ABC):
     @abstractmethod
-    def get_key_results_by_team_id(self, team_id) -> Optional[List[KeyResult]]:
+    def get_key_results_by_team_id(self, team_id, filters) -> Optional[List[KeyResult]]:
         pass
     
     @abstractmethod
@@ -20,7 +20,7 @@ class IKeyResultApplicationService(ABC):
 
 class IKeyResultRepository(ABC):
     @abstractmethod
-    def find_by_team_id(self, team_id) -> Optional[List[KeyResult]]:
+    def find_by_team_id(self, team_id, filters) -> Optional[List[KeyResult]]:
         pass
     
     @abstractmethod

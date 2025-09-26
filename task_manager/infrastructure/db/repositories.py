@@ -1,15 +1,19 @@
-from typing import Dict, Tuple
-from task_manager.domain.entities import Task
+from cycle.models import CycleORM
 from task_manager.infrastructure.api.v1.filters import TasksFilterSchema
 from task_manager.models import TaskORM
 from task_manager.application.interfaces import ITaskRepository
 from task_manager.infrastructure.db.mappers import map_task_entity_to_orm, map_task_orm_to_task_board_entity, map_task_orm_to_entity
+from team.models import TeamCompany
 
 class DjangoTaskRepository(ITaskRepository):
     def find_tasks_and_filter(self, filter: TasksFilterSchema):
         try:
             task_orm = TaskORM.objects.all()
             task_orm = filter.filter(task_orm)
+            if filter.cy is None:
+                team = TeamCompany.objects.get(team_id=filter.team_id)
+                cycles = CycleORM.objects.filter(team_id=team.company.id, active=True)
+                task_orm = task_orm.filter(cycle__id__in=[cycle.id for cycle in cycles])
             return [map_task_orm_to_task_board_entity(i) for i in task_orm], 200, None 
         except TaskORM.DoesNotExist:
             return None, 404, {'error':'Task not exist.'}

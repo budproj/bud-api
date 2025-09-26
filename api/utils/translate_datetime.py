@@ -57,7 +57,7 @@ class TranslateRelativeDate:
                 week_end = week_selected + relativedelta(
                     days=7 - week_selected.isocalendar().weekday
                 )
-                return week_start, week_end
+                return week_start, current_day
             case 'months':
                 current_day = now
                 month_selected = current_day - relativedelta(months=time_relative)

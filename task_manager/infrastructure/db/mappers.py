@@ -7,7 +7,7 @@ from key_result.models import KeyResultORM
 from task_manager.domain.entities import TaskBoard, TaskComments, Task, TaskHistory
 
 from task_manager.models import TaskCommentsORM, TaskORM, TaskHistoryORM
-from team.models import TeamORM
+from team.models import TeamCompany, TeamORM
 from user.models import UserORM
 
 from user.infrastructure.db.mappers import map_user_orm_to_entity
@@ -98,8 +98,16 @@ def map_task_entity_to_orm(tk_entity: Task) -> TaskORM:
     tk_orm.orderindex = tk_entity.orderindex
     tk_orm.team = add_to_model(tk_entity.team, TeamORM)
     tk_orm.key_result = add_to_model(tk_entity.keyResult, KeyResultORM)
-    tk_orm.cycle = add_to_model(tk_entity.cycle, CycleORM)
     tk_orm.owner = add_to_model(tk_entity.owner, UserORM)
+    
+    if tk_entity.cycle is None and tk_entity.team is not None:
+        team = TeamCompany.objects.get(team_id=tk_entity.team)
+        cycle = CycleORM.objects.get(active=True, team_id=team.company.id, cadence=CycleORM.CycleCadenceChoices.YEARLY)
+        tk_orm.cycle = cycle
+    elif tk_entity.team is None:
+        tk_orm.cycle = None
+    else: 
+        tk_orm.cycle = add_to_model(tk_entity.cycle, CycleORM)
     
     tk_orm.full_clean()
     tk_orm.save()

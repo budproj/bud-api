@@ -9,8 +9,8 @@ class KeyResultApplicationService(IKeyResultApplicationService):
     def __init__(self, kr_repository: IKeyResultRepository = None):
         self.kr_repository = kr_repository or DjangoKeyResultRepository()
     
-    def get_key_results_by_team_id(self, team_id) -> Optional[List[KeyResult]]:
-        return self.kr_repository.find_by_team_id(team_id)
+    def get_key_results_by_team_id(self, team_id, filters):
+        return self.kr_repository.find_by_team_id(team_id, filters)
     
     def patch(self, key_result_id, data):
         return self.kr_repository.update_key_result(key_result_id, data)
