@@ -73,7 +73,7 @@ def map_task_orm_to_task_board_entity(task_orm: TaskORM) -> TaskBoard:
         updatedAt=task_orm.updated_at,
         deletedAt=task_orm.deleted_at,
         history=[map_task_history_orm_to_entity(i) for i in TaskHistoryORM.objects.filter(task_id=str(task_orm.id))],
-        usersRelated=[map_user_orm_to_entity(task_orm.owner)]+[map_user_orm_to_entity(UserORM.objects.get(i)) for i in task_orm.support_team] if task_orm.support_team else [map_user_orm_to_entity(task_orm.owner)],
+        usersRelated=[map_user_orm_to_entity(task_orm.owner)]+[map_user_orm_to_entity(UserORM.objects.get(id=i)) for i in task_orm.support_team] if task_orm.support_team else [map_user_orm_to_entity(task_orm.owner)],
         ownerFullName=f'{task_orm.owner.first_name} {task_orm.owner.last_name}',
     )
     
