@@ -1,10 +1,14 @@
 from ninja import Router, Query
 from typing import List
 
-from task_manager.domain.entities import Task, TaskBoard, TaskPatch
-from task_manager.infrastructure.api.v1.filters import TasksFilterSchema
 from task_manager.application.interfaces import ITaskApplicationService
 from task_manager.application.services import TaskApplicationService
+
+from task_manager.domain.entities.task import Task
+from task_manager.domain.entities.task_board import TaskBoard
+from task_manager.domain.entities.task_patch import TaskPatch
+
+from task_manager.infrastructure.api.v1.filters import TasksFilterSchema
 
 task_router = Router(tags=["task_manager"])
 

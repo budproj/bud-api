@@ -1,6 +1,4 @@
-from typing import Dict, Tuple
 from task_manager.application.interfaces import ITaskApplicationService, ITaskRepository
-from task_manager.domain.entities import Task
 from task_manager.infrastructure.db.repositories import DjangoTaskRepository
 
 

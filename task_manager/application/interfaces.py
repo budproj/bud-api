@@ -1,9 +1,15 @@
 from abc import ABC, abstractmethod
 from typing import Optional, List, Tuple, Dict
 
-from task_manager.domain.entities import Task, TaskBoard, TaskComments, TaskPatch
+from task_manager.domain.entities.task import Task
+from task_manager.domain.entities.task_board import TaskBoard
+from task_manager.domain.entities.task_patch import TaskPatch
+from task_manager.domain.entities.task_comments import TaskComments
+
 from task_manager.infrastructure.api.v1.filters import TasksFilterSchema
+
 from user.models import UserORM
+
 
 class ITaskApplicationService(ABC):
     @abstractmethod

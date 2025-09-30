@@ -1,16 +1,22 @@
-from cycle.models import CycleORM
-from task_manager.infrastructure.api.v1.filters import TasksFilterSchema
-from task_manager.models import TaskORM
 from task_manager.application.interfaces import ITaskRepository
-from task_manager.infrastructure.db.mappers import map_task_entity_to_orm, map_task_orm_to_task_board_entity, map_task_orm_to_entity
+
+from cycle.models import CycleORM
+from task_manager.models import TaskORM
 from team.models import TeamCompany
+
+from task_manager.infrastructure.api.v1.filters import TasksFilterSchema
+
+from task_manager.infrastructure.db.mappers.task_orm_to_task_board_entity import map_task_orm_to_task_board_entity
+from task_manager.infrastructure.db.mappers.task_orm_to_entity import map_task_orm_to_entity
+from task_manager.infrastructure.db.mappers.task_entity_to_orm import map_task_entity_to_orm
+
 
 class DjangoTaskRepository(ITaskRepository):
     def find_tasks_and_filter(self, filter: TasksFilterSchema):
         try:
             task_orm = TaskORM.objects.all()
             task_orm = filter.filter(task_orm)
-            if filter.cy is None:
+            if filter.cy is None and filter.team_id:
                 team = TeamCompany.objects.get(team_id=filter.team_id)
                 cycles = CycleORM.objects.filter(team_id=team.company.id, active=True)
                 task_orm = task_orm.filter(cycle__id__in=[cycle.id for cycle in cycles])
