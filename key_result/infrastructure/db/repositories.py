@@ -14,7 +14,7 @@ from key_result.infrastructure.db.mappers import map_key_result_orm_to_entity, m
 class DjangoKeyResultRepository(IKeyResultRepository):
     def find_by_team_id(self, team_id: str, filters) -> Optional[List[KeyResult]]:
         try:
-            kr_orm = KeyResultORM.objects.filter(team__id=team_id, objective__cycle__active=True)
+            kr_orm = KeyResultORM.objects.filter(team__id=team_id)
             kr_orm = filters.filter(kr_orm)
             return [map_key_result_orm_to_entity(i) for i in kr_orm]
         except KeyResultORM.DoesNotExist:
