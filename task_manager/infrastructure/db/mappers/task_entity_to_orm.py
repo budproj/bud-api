@@ -39,7 +39,10 @@ def map_task_entity_to_orm(tk_entity: Task) -> TaskORM:
     tk_orm.key_result = add_to_model(tk_entity.keyResult, KeyResultORM)
     tk_orm.owner = add_to_model(tk_entity.owner, UserORM)
     
-    if tk_entity.cycle is None and tk_entity.team is not None:
+    if tk_entity.cycle is None and tk_entity.keyResult is not None:
+        key_result = KeyResultORM.objects.get(id=tk_entity.keyResult)
+        tk_orm.cycle = key_result.objective.cycle
+    elif tk_entity.cycle is None and tk_entity.team is not None:
         team = TeamCompany.objects.get(team_id=tk_entity.team)
         cycle = CycleORM.objects.get(active=True, team_id=team.company.id, cadence=CycleORM.CycleCadenceChoices.YEARLY)
         tk_orm.cycle = cycle
