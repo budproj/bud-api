@@ -9,8 +9,14 @@ from key_result.domain.entities.key_result import KeyResult
 from key_result.domain.entities.key_result_with_tasks import KeyResultWTasks
 
 from key_result.infrastructure.db.mappers import map_key_result_orm_to_entity, map_key_result_with_tasks_orm_to_entity
-
-
+    
+def translate_keys(key):
+    match(key):
+        case 'objectiveId':
+            return 'objective_id'
+        case _:
+            return key
+        
 class DjangoKeyResultRepository(IKeyResultRepository):
     def find_by_team_id(self, team_id: str, filters) -> Optional[List[KeyResult]]:
         try:
@@ -49,7 +55,8 @@ class DjangoKeyResultRepository(IKeyResultRepository):
 
         update_data = data.model_dump(exclude_unset=True)
         for key, value in update_data.items():
-            setattr(kr_orm, key, value)
+            orm_key = translate_keys(key)
+            setattr(kr_orm, orm_key, value)
 
         kr_orm.save()
         return map_key_result_orm_to_entity(kr_orm)
