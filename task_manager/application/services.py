@@ -1,4 +1,5 @@
-from task_manager.application.interfaces import ITaskApplicationService, ITaskRepository
+from task_manager.application.interfaces import ITaskApplicationService, ITaskCommentApplicationService, ITaskCommentRepository, ITaskRepository
+from task_manager.domain.entities.task_comments import TaskComments
 from task_manager.infrastructure.db.repositories import DjangoTaskRepository
 
 
@@ -22,3 +23,16 @@ class TaskApplicationService(ITaskApplicationService):
     
     def patch_task(self, id, data):
         return self.task_repository.patch_task(id, data)
+    
+class TaskCommentApplicationService(ITaskCommentApplicationService):
+    def __init__(self, task_comments_repository: ITaskCommentRepository = None):
+        self.task_comments_repository = task_comments_repository or DjangoTaskRepository()
+
+    def get_task_comments_by_task_id(self, id: str):
+        return self.task_comments_repository.find_comments_by_task_id(id)
+
+    def create_task_comment(self, payload: TaskComments):
+        return self.task_comments_repository.create_task_comment(payload)
+
+    def delete_task_comments_by_id(self, id: str):
+        return self.task_comments_repository.delete_task_comments_by_id(id)

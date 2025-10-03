@@ -8,6 +8,7 @@ from task_manager.domain.entities.task_comments import TaskComments
 
 from task_manager.infrastructure.api.v1.filters import TasksFilterSchema
 
+from task_manager.models import TaskCommentsORM
 from user.models import UserORM
 
 
@@ -56,11 +57,27 @@ class ITaskRepository(ABC):
 
 class ITaskCommentApplicationService(ABC):
     @abstractmethod
-    def get_tasks_by_filters(self, filter) -> Optional[List[TaskComments]]:
+    def get_task_comments_by_task_id(self, id: str) -> tuple[Optional[List[TaskComments]], int, Optional[dict[str, str]]]:
+        pass
+    
+    @abstractmethod
+    def create_task_comment(self, payload: TaskComments) -> tuple[Optional[TaskComments], int, Optional[dict[str, str]]]:
+        pass
+    
+    @abstractmethod
+    def delete_task_comments_by_id(self, id: str) -> tuple[int, Optional[dict[str, str]]]:
         pass
 
 
 class ITaskCommentRepository(ABC):
     @abstractmethod
-    def find_tasks_and_filter(self, filter) -> Optional[List[TaskComments]]:
+    def find_comments_by_task_id(self, id: str) -> tuple[Optional[List[TaskComments]], int, Optional[dict[str, str]]]:
+        pass
+    
+    @abstractmethod
+    def create_task_comment(self, payload: TaskComments) -> tuple[Optional[TaskComments], int, Optional[dict[str, str]]]:
+        pass
+    
+    @abstractmethod
+    def delete_task_comments_by_id(self, id: str) -> tuple[int, Optional[dict[str, str]]]:
         pass

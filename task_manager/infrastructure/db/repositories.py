@@ -1,7 +1,10 @@
 from task_manager.application.interfaces import ITaskRepository
 
 from cycle.models import CycleORM
-from task_manager.models import TaskORM
+from task_manager.application.interfaces import ITaskCommentRepository
+from task_manager.infrastructure.db.mappers.task_comments_entity_to_orm import map_task_comments_entity_to_orm
+from task_manager.infrastructure.db.mappers.task_comments_orm_to_entity import map_task_comments_orm_to_entity
+from task_manager.models import TaskCommentsORM, TaskORM
 from team.models import TeamCompany
 
 from task_manager.infrastructure.api.v1.filters import TasksFilterSchema
@@ -60,3 +63,29 @@ class DjangoTaskRepository(ITaskRepository):
 
         task_orm.save()
         return map_task_orm_to_entity(task_orm), 200, None
+
+
+class DjangoTaskCommentsRepository(ITaskCommentRepository):
+    def find_comments_by_task_id(self, id):
+        try: 
+            comment_orm = TaskCommentsORM.objects.filter(task_id=id)
+            return [map_task_comments_orm_to_entity(task_orm=i) for i in comment_orm], 200, None
+        except TaskCommentsORM.DoesNotExist:
+            return None, 404, {'error':'Task not exist.'}
+        
+    def create_task_comment(self, payload):
+        try:
+            comment_orm = map_task_comments_entity_to_orm(payload)
+            return map_task_comments_orm_to_entity(comment_orm), 200, None
+        except:
+            return None, 404, {'error':'Invalid Comment'}
+        
+    def delete_task_comments_by_id(self, id):
+        try: 
+            comment_orm = TaskCommentsORM.objects.get(id=id)
+            if comment_orm.deleted_at:
+                return 404, {'error':'Task already deleted.'}
+            comment_orm.soft_delete()
+            return 200, None
+        except TaskCommentsORM.DoesNotExist:
+            return 404, {'error':'Task not exist.'}
