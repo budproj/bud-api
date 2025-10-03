@@ -2,15 +2,12 @@ import uuid6
 
 from django.db import models
 
-from user.enums.user_choices import UserStatusChoices
-from user.enums.user_settings_choices import UserSettingsKeyChoices
-
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
     PermissionsMixin,
 )
-from api.base.base_model import BaseModel
+from api.models import BaseModel
 
 
 class CustomUserManager(BaseUserManager):
@@ -31,7 +28,7 @@ class CustomUserManager(BaseUserManager):
                 us.id IN ({placeholders_ids})
         """
         params = (kr_id, kr_id) + tuple(list_users) 
-        result = User.objects.raw(query, params)
+        result = UserORM.objects.raw(query, params)
         
         
         if result: 
@@ -52,7 +49,11 @@ class CustomUserManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
 
 
-class User(AbstractBaseUser, PermissionsMixin):
+class UserORM(AbstractBaseUser, PermissionsMixin):
+    class UserStatusChoices(models.TextChoices):
+        ACTIVE = 'ACTIVE'
+        INACTIVE = 'INACTIVE'
+        
     id = models.UUIDField(primary_key=True, default=uuid6.uuid7, null=False, blank=False) # initial
     authz_sub = models.CharField() # initial
     role = models.CharField(blank=True, null=True) # initial
@@ -87,10 +88,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     class Meta:
         db_table = 'user'
 
-class UserSetting(BaseModel):
+class UserSettingORM(BaseModel):
+    class UserSettingsKeyChoices(models.TextChoices):
+        LOCALE = 'LOCALE'
+        
     key = models.TextField(choices=UserSettingsKeyChoices.choices) # initial
     value = models.CharField() # initial
-    user = models.ForeignKey(User, models.DO_NOTHING, db_column='user_id') # initial
+    user = models.ForeignKey(UserORM, models.DO_NOTHING, db_column='user_id') # initial
     preferences = models.JSONField() # initial
 
     class Meta:

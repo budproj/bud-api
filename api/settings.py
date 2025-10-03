@@ -34,18 +34,25 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-    'task_manager',
-    'okr',
-    'team',
-    'user',
+    # Django Basic
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
+    # External apps
     'drf_yasg',
     'corsheaders',
+    
+    # Apps
+    'cycle',
+    'key_result',
+    'objective',
+    'task_manager',
+    'team',
+    'user',
 ]
 
 MIDDLEWARE = [
@@ -57,7 +64,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
-    'api.middleware.AuthenticationMiddleware',
 ]
 
 # If this is used then `CORS_ALLOWED_ORIGINS` will not have any effect
@@ -126,7 +132,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-AUTH_USER_MODEL = 'user.User'
+AUTH_USER_MODEL = 'user.UserORM'
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
