@@ -1,9 +1,12 @@
 from task_manager.domain.entities.task import Task
 
 from task_manager.models import TaskORM
+from user.infrastructure.db.mappers import map_user_orm_to_entity
+from user.models import UserORM
 
 
 def map_task_orm_to_entity(task_orm: TaskORM) -> Task:
+    support_team_orm = UserORM.objects.filter(id__in=task_orm.support_team) if task_orm.support_team else None
     return Task(
         team=str(task_orm.team.id) if task_orm.team else None,
         keyResult=str(task_orm.key_result.id) if task_orm.key_result else None,
@@ -15,7 +18,7 @@ def map_task_orm_to_entity(task_orm: TaskORM) -> Task:
         priority=task_orm.priority,
         initialDate=task_orm.initial_date,
         dueDate=task_orm.due_date,
-        supportTeam=[i for i in task_orm.support_team] if task_orm.support_team else None,
+        supportTeam=[map_user_orm_to_entity(i) for i in support_team_orm] if support_team_orm else [],
         attachments=[i for i in task_orm.attachments] if task_orm.attachments else None,
         tags=[i for i in task_orm.tags] if task_orm.tags else None,
         orderindex=task_orm.orderindex,

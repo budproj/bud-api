@@ -8,7 +8,7 @@ class TaskPatch(BaseModel):
     team: Optional[str] = None
     key_result_id: Optional[str] = Field(None, alias='keyResult')
     cycle: Optional[str] = None
-    owner: Optional[str] = None
+    owner_id: Optional[str] = Field(None, alias='owner')
     status: Optional[str] = None
     title: Optional[str] = None
     description: Optional[str] = None

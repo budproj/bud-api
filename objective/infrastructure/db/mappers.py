@@ -5,7 +5,7 @@ from objective.models import ObjectiveORM
 def map_objective_orm_to_entity(obj_orm: ObjectiveORM) -> Objective:
     return Objective(
         title=obj_orm.title,  
-        cycle=str(obj_orm.cycle.id),
+        cycleId=str(obj_orm.cycle.id),
         owner=str(obj_orm.owner.id),
         mode=obj_orm.mode,
         teamId=str(obj_orm.team.id) if obj_orm.team else None,

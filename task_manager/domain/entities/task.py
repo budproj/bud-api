@@ -2,6 +2,8 @@ from datetime import datetime
 from pydantic import BaseModel
 from typing import List, Optional
 
+from user.domain.entities import User
+
 
 class Task(BaseModel):
     team: Optional[str] = None
@@ -14,7 +16,7 @@ class Task(BaseModel):
     priority: Optional[int] = None
     initialDate: Optional[datetime] = None
     dueDate: Optional[datetime] = None
-    supportTeam: Optional[List[str]] = None
+    supportTeam: Optional[List[User]] = None
     attachments: Optional[List[str]] = None
     tags: Optional[List[str]] = None
     orderindex: Optional[int] = None
