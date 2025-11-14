@@ -21,7 +21,7 @@ class TaskBoard(BaseModel):
     priority: Optional[int]
     initialDate: Optional[datetime]
     dueDate: Optional[datetime]
-    supportTeam: Optional[List[str]]
+    supportTeam: Optional[List[User]]
     attachments: Optional[List[str]]
     tags: Optional[List[str]]
     orderindex: Optional[int]
