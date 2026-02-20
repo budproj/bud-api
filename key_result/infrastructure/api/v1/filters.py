@@ -13,11 +13,12 @@ class KeyResultFilterSchema(FilterSchema):
     
     def filter_cy(self, value: str):
         if value == '' or value is None:
-            return Q()
+            return Q(objective__cycle__active=True)
         
         cycle = value.split('+')
         year = exclude_string_spaces(cycle[0])
         quarter = exclude_string_spaces(cycle[1]) if cycle[1] != '' else None
+        
         if year == '' and quarter == '':
             return Q(objective__cycle__active=True)
         return Q(objective__cycle__id=quarter or year)
